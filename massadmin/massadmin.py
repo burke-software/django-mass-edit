@@ -42,7 +42,6 @@ from django.utils.html import escape
 from django.contrib.contenttypes.models import ContentType
 from django import  template
 from django.shortcuts import render_to_response
-from django.views.generic.simple import redirect_to
 from django.forms.formsets import all_valid
 
 import sys
@@ -51,14 +50,11 @@ urls = patterns('',
     (r'(?P<app_name>[^/])/(?P<model_name>[^/]+)-masschange/(?P<object_ids>[0-9,]+)/$', 'massadmin.massadmin.mass_change_view'),
 )
 
-def redirect_to_admin(request, whatever):
-    return redirect_to(request, url = 'admin/%s' % whatever)
-
 #noinspection PyUnusedLocal
 def mass_change_selected(modeladmin, request, queryset):
     # print request.POST
     selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
-    return redirect_to(request, url = '../%s-masschange/%s' % (modeladmin.model._meta.module_name, ','.join(selected)))
+    return HttpResponseRedirect('../%s-masschange/%s' % (modeladmin.model._meta.module_name, ','.join(selected)))
 mass_change_selected.short_description = u'Mass Edit'
 
 def mass_change_view(request, app_name, model_name, object_ids):
