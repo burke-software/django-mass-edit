@@ -4,6 +4,21 @@
 
 {% block extrahead %}{{ block.super }}
 <script type="text/javascript" src="../../../jsi18n/"></script>
+<script type="text/javascript">
+  function verify_checked() {
+    checkboxes = document.querySelectorAll("input.update_checkbox");
+    some_checked = false;
+    for (var i = 0, len = checkboxes.length; i < len; i++) {
+      if ( checkboxes[i].checked ) {
+        some_checked = true;
+      }
+    }
+    if ( ! some_checked ) {
+    	some_checked = confirm('You have not checked off any fields to update. Are you sure you wish to continue?');
+    }
+    return some_checked;
+  }
+</script>
 {{ media }}
 {% endblock %}
 
@@ -30,7 +45,7 @@
   </ul>
 {% endif %}{% endif %}
 {% endblock %}
-<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.module_name }}_form">{% csrf_token %}{% block form_top %}{% endblock %}
+<form onsubmit="return verify_checked()" {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.module_name }}_form">{% csrf_token %}{% block form_top %}{% endblock %}
 <div>
 {% if is_popup %}<input type="hidden" name="_popup" value="1" />{% endif %}
 {% if save_on_top %}{% include "admin/save_only_submit_line.html" %}{% endif %}
