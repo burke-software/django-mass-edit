@@ -52,8 +52,10 @@ urls = patterns('',
 
 #noinspection PyUnusedLocal
 def mass_change_selected(modeladmin, request, queryset):
-    # print request.POST
-    selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
+    selected_int = queryset.values_list('id', flat=True)
+    selected = []
+    for s in selected_int:
+        selected.append(str(s))
     return HttpResponseRedirect('../%s-masschange/%s' % (modeladmin.model._meta.module_name, ','.join(selected)))
 mass_change_selected.short_description = u'Mass Edit'
 
