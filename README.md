@@ -1,4 +1,4 @@
-From Stanislaw Adaszewski's work (blog since deleted). I've fixed bugs and made changes to make it a production friendly drop-in Django app for bulk changes in Django's admin interface.
+From Stanislaw Adaszewski's work (blog at http://algoholic.eu/django-mass-change-admin-site-extension/ ). I've fixed bugs and made changes to make it a production friendly drop-in Django app for bulk changes in Django's admin interface.
 
 Check off what you want to edit in list view then choose mass edit from the actions menu. Image was taken using Grappelli
 
