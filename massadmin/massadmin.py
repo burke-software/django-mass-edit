@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 from django.contrib import admin
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from django.core.exceptions import PermissionDenied
 from django.db import transaction, models
 from django.contrib.admin.util import unquote
