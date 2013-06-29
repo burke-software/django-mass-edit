@@ -52,7 +52,7 @@ urls = patterns('',
 
 #noinspection PyUnusedLocal
 def mass_change_selected(modeladmin, request, queryset):
-    selected_int = queryset.values_list('id', flat=True)
+    selected_int = queryset.values_list('pk', flat=True)
     selected = []
     for s in selected_int:
         selected.append(str(s))
