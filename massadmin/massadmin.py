@@ -57,7 +57,7 @@ def mass_change_selected(modeladmin, request, queryset):
     for s in selected_int:
         selected.append(str(s))
     return HttpResponseRedirect('../%s-masschange/%s' % (modeladmin.model._meta.module_name, ','.join(selected)))
-mass_change_selected.short_description = u'Mass Edit'
+mass_change_selected.short_description = _('Mass Edit')
 
 def mass_change_view(request, app_name, model_name, object_ids):
     model = models.get_model(app_name, model_name)
