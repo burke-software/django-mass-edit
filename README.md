@@ -16,8 +16,14 @@ Check off what you want to edit in list view then choose mass edit from the acti
 - Validation errors do not show up by the field they should
 
 # Installation
-easy_install django-mass-edit
+pip install django-mass-edit
 
 In settings.py add massadmin to installed apps.
 
 Add (r'^admin/', include("massadmin.urls")), to urls.py
+
+## Optional
+You may exclude some fields like this:
+
+    class PollAdmin(admin.ModelAdmin):
+        massadmin_exclude = ['user', ]
