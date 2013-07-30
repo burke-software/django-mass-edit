@@ -176,8 +176,8 @@ class MassAdmin(admin.ModelAdmin):
                                 formsets.append(formset)
                                 
                         if all_valid(formsets) and form_validated:
-                            self.admin_obj.save_model(request, new_object, form, change=True)
-                            # self.save_model(request, new_object, form, change=True)
+			    #self.admin_obj.save_model(request, new_object, form, change=True)
+                            self.save_model(request, new_object, form, change=True)
                             form.save_m2m()
                             for formset in formsets:
                                 self.save_formset(request, form, formset, change=True)
@@ -186,7 +186,7 @@ class MassAdmin(admin.ModelAdmin):
                             self.log_change(request, new_object, change_message)
                             changed_count += 1
                             
-                    if changed_count != objects_count:
+                    if False and changed_count != objects_count:
                         raise Exception('Some of the selected objects could\'t be changed.')
                     transaction.commit()    
                     return self.response_change(request, new_object)
