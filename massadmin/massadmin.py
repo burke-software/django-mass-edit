@@ -119,6 +119,9 @@ class MassAdmin(admin.ModelAdmin):
         model = self.model
         opts = model._meta
         general_error = None
+
+        # Allow model to hide some fields for mass admin
+        self.exclude = getattr(self.admin_obj, "massadmin_exclude", None)
                         		
         object_ids = comma_separated_object_ids.split(',')
         object_id = object_ids[0]
