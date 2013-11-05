@@ -121,7 +121,7 @@ class MassAdmin(admin.ModelAdmin):
         general_error = None
 
         # Allow model to hide some fields for mass admin
-        self.exclude = getattr(self.admin_obj, "massadmin_exclude", None)
+        exclude_fields = getattr(self.admin_obj, "massadmin_exclude", ())
                         		
         object_ids = comma_separated_object_ids.split(',')
         object_id = object_ids[0]
@@ -234,6 +234,7 @@ class MassAdmin(admin.ModelAdmin):
             'object_id': object_id,
             'original': obj,
             'unique_fields': unique_fields,
+            'exclude_fields': exclude_fields,
             'is_popup': request.REQUEST.has_key('_popup'),
             'media': mark_safe(media),
             #'inline_admin_formsets': inline_admin_formsets,

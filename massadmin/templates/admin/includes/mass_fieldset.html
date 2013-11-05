@@ -42,7 +42,7 @@
             <td>
               {{ field.field.name }} {% trans "is unique." %}
             </td>
-          {% else %}
+          {% elif not field.field.name in exclude_fields %}
             <td style="vertical-align: middle;">
               <input type="checkbox" class="update_checkbox" name="_mass_change_{{ field.field.name }}" />
             </td>
