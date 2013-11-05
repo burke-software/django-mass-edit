@@ -1,6 +1,9 @@
-From Stanislaw Adaszewski's work (blog at http://algoholic.eu/django-mass-change-admin-site-extension/ ). I've fixed bugs and made changes to make it a production friendly drop-in Django app for bulk changes in Django's admin interface.
+From Stanislaw Adaszewski's work (blog at http://algoholic.eu/django-mass-change-admin-site-extension/ ). 
+I've fixed bugs and made changes to make it a production friendly drop-in Django app for bulk changes in Django's 
+admin interface.
 
-Check off what you want to edit in list view then choose mass edit from the actions menu. Image was taken using Grappelli
+Check off what you want to edit in list view then choose mass edit from the actions menu. 
+Image was taken using Grappelli
 
 ![Alt text](https://raw.github.com/burke-software/django-mass-edit/master/doc/screenshot9.png)
 
@@ -16,14 +19,17 @@ Check off what you want to edit in list view then choose mass edit from the acti
 - Validation errors do not show up by the field they should
 
 # Installation
-pip install django-mass-edit
+`pip install django-mass-edit`
 
 In settings.py add massadmin to installed apps.
 
-Add (r'^admin/', include("massadmin.urls")), to urls.py
+Add `(r'^admin/', include("massadmin.urls")),` to urls.py
 
 ## Optional
 You may exclude some fields like this:
 
     class PollAdmin(admin.ModelAdmin):
         massadmin_exclude = ['user', ]
+
+You can also add or remove the "action" to models if you don't want it global. 
+See [Django Docs on the subject](https://docs.djangoproject.com/en/dev/ref/contrib/admin/actions/#disabling-all-actions-for-a-particular-modeladmin)
