@@ -1,9 +1,8 @@
-{% extends "admin/base.html" %}
+{% extends "admin/change_form.html" %}
 {% load i18n admin_modify %}
 {% load truncchar %}
 
 {% block extrahead %}{{ block.super }}
-<script type="text/javascript" src="../../../jsi18n/"></script>
 <script type="text/javascript">
   function verify_checked() {
     checkboxes = document.querySelectorAll("input.update_checkbox");
@@ -19,14 +18,7 @@
     return some_checked;
   }
 </script>
-{{ media }}
 {% endblock %}
-
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="/static/css/forms.css" />{% endblock %}
-
-{% block coltype %}{% if ordered_objects %}colMS{% else %}colM{% endif %}{% endblock %}
-
-{% block bodyclass %}{{ opts.app_label }}-{{ opts.object_name.lower }} change-form{% endblock %}
 
 {% block breadcrumbs %}{% if not is_popup %}
 <div id="breadcrumbs" class="breadcrumbs">
@@ -39,11 +31,7 @@
 
 {% block content %}<div id="content-main">
 {% block object-tools %}
-{% if change %}{% if not is_popup %}
-  {# <ul class="object-tools"><li><a href="history/" class="historylink">{% trans "History" %}</a></li> #}
-  {# {% if has_absolute_url %}<li><a href="../../../r/{{ content_type_id }}/{{ object_id }}/" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif%} #}
-  </ul>
-{% endif %}{% endif %}
+
 {% endblock %}
 <form onsubmit="return verify_checked()" {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.module_name }}_form">{% csrf_token %}{% block form_top %}{% endblock %}
 <div>
