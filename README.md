@@ -1,4 +1,4 @@
-From Stanislaw Adaszewski's work (blog at http://algoholic.eu/django-mass-change-admin-site-extension/ ). 
+From Stanislaw Adaszewski's [blog](http://algoholic.eu/django-mass-change-admin-site-extension/ ). 
 I've fixed bugs and made changes to make it a production friendly drop-in Django app for bulk changes in Django's 
 admin interface.
 
