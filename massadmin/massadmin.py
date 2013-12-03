@@ -122,12 +122,13 @@ class MassAdmin(admin.ModelAdmin):
 
         # Allow model to hide some fields for mass admin
         exclude_fields = getattr(self.admin_obj, "massadmin_exclude", ())
+        queryset = getattr(self.admin_obj, "massadmin_queryset", self.queryset)(request)
                         		
         object_ids = comma_separated_object_ids.split(',')
         object_id = object_ids[0]
 
         try:
-            obj = self.queryset(request).get(pk=unquote(object_id))
+            obj = queryset.get(pk=unquote(object_id))
         except model.DoesNotExist:
             obj = None
 
@@ -148,7 +149,7 @@ class MassAdmin(admin.ModelAdmin):
                 try:
                     objects_count = 0
                     changed_count = 0
-                    objects = self.queryset(request).filter(pk__in = object_ids)
+                    objects = queryset.filter(pk__in = object_ids)
                     for obj in objects:
                         objects_count += 1
                         form = ModelForm(request.POST, request.FILES, instance=obj)
