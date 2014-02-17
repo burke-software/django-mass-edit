@@ -33,7 +33,7 @@ from django.core.exceptions import PermissionDenied
 from django.db import transaction, models
 from django.contrib.admin.util import unquote
 from django.contrib.admin import helpers
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_unicode
 from django.utils.safestring import mark_safe
 from django.contrib.admin.views.decorators import staff_member_required
