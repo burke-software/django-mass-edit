@@ -209,7 +209,7 @@ class MassAdmin(admin.ModelAdmin):
             formset = FormSet(instance=obj, prefix=prefix)
             formsets.append(formset)
             
-        adminForm = helpers.AdminForm(form, self.get_fieldsets(request, obj), self.prepopulated_fields, self.get_readonly_fields(request, obj))
+        adminForm = helpers.AdminForm(form, self.get_fieldsets(request, obj), self.prepopulated_fields, self.get_readonly_fields(request, obj), model_admin=self.admin_obj)
         media = self.media + adminForm.media
         
         # We don't want the user trying to mass change unique fields!
