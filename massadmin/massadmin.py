@@ -34,7 +34,10 @@ from django.db import transaction, models
 from django.contrib.admin.util import unquote
 from django.contrib.admin import helpers
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import force_unicode
+try:
+    from django.utils.encoding import force_text
+except: # 1.4 compat
+    from django.utils.encoding import force_unicode as force_text
 from django.utils.safestring import mark_safe
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import Http404, HttpResponseRedirect
@@ -73,7 +76,11 @@ class MassAdmin(admin.ModelAdmin):
             self.admin_obj = admin_site._registry[model]
         except KeyError:
             raise Exception('Model not registered with the admin site.')
-        for (varname, var) in self.admin_obj.__class__.__dict__.iteritems():
+        try:
+            admin_obj_items = self.admin_obj.__class__.__dict__.iteritems()
+        except AttributeError:  # Python 2.x compat
+            admin_obj_items = self.admin_obj.__class__.__dict__.items()
+        for (varname, var) in admin_obj_items:
             if not (varname.startswith('_') or callable(var)):
                 self.__dict__[varname] = var
         super(MassAdmin, self).__init__(model, admin_site)
@@ -84,7 +91,7 @@ class MassAdmin(admin.ModelAdmin):
         """
         opts = obj._meta
 
-        msg = _('Selected %(name)s were changed successfully.') % {'name': force_unicode(opts.verbose_name_plural), 'obj': force_unicode(obj)}
+        msg = _('Selected %(name)s were changed successfully.') % {'name': force_text(opts.verbose_name_plural), 'obj': force_text(obj)}
 
         self.message_user(request, msg)
         return HttpResponseRedirect("../../%s/" % self.model._meta.module_name)
@@ -136,7 +143,7 @@ class MassAdmin(admin.ModelAdmin):
             raise PermissionDenied
 
         if obj is None:
-            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_unicode(opts.verbose_name), 'key': escape(object_id)})
+            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_text(opts.verbose_name), 'key': escape(object_id)})
 
         if request.method == 'POST' and request.POST.has_key("_saveasnew"):
             return self.add_view(request, form_url='../add/')
@@ -230,7 +237,7 @@ class MassAdmin(admin.ModelAdmin):
         #    media = media + inline_admin_formset.media
             
         context = {
-            'title': _('Change %s') % force_unicode(opts.verbose_name),
+            'title': _('Change %s') % force_text(opts.verbose_name),
             'adminform': adminForm,
             'object_id': object_id,
             'original': obj,

@@ -19,7 +19,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'massadmin',
-    'south',
 )
 
 ROOT_URLCONF = "test_urls"

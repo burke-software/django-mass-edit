@@ -26,6 +26,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 '''
 
 from django.contrib import admin
-from massadmin import mass_change_selected
+from .massadmin import mass_change_selected
 
 admin.site.add_action(mass_change_selected)
