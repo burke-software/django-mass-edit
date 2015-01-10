@@ -19,11 +19,10 @@ Image was taken using Grappelli
 - Validation errors do not show up by the field they should
 
 # Installation
-`pip install django-mass-edit`
 
-In settings.py add massadmin to installed apps.
-
-Add `(r'^admin/', include("massadmin.urls")),` to urls.py
+1. `pip install django-mass-edit`
+2. In settings.py add massadmin to installed apps.
+3. Add `(r'^admin/', include("massadmin.urls")),` to urls.py
 
 ## Optional
 You may exclude some fields like this:
