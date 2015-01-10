@@ -22,7 +22,8 @@ Image was taken using Grappelli
 
 1. `pip install django-mass-edit`
 2. In settings.py add massadmin to installed apps.
-3. Add `(r'^admin/', include("massadmin.urls")),` to urls.py
+3. In settings.py uncomment/add django.template.loaders.eggs.Loader in TEMPLATE_LOADERS section
+4. Add `(r'^admin/', include("massadmin.urls")),` to urls.py
 
 ## Optional
 You may exclude some fields like this:
