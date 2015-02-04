@@ -203,7 +203,10 @@ class MassAdmin(admin.ModelAdmin):
                     return self.response_change(request, new_object)
                     
                 finally:
-                    general_error = unicode(sys.exc_info()[1])
+                    if sys.version < '3':
+                       general_error = unicode(sys.exc_info()[1])
+                    else:
+                    	general_error = sys.exc_info()[1]
                     transaction.rollback()
                     
         form = ModelForm(instance=obj)
