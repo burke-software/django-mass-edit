@@ -145,7 +145,7 @@ class MassAdmin(admin.ModelAdmin):
         if obj is None:
             raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_text(opts.verbose_name), 'key': escape(object_id)})
 
-        if request.method == 'POST' and request.POST.has_key("_saveasnew"):
+        if request.method == 'POST' and "_saveasnew" in request.POST:
             return self.add_view(request, form_url='../add/')
 
         ModelForm = self.get_form(request, obj)
@@ -164,7 +164,7 @@ class MassAdmin(admin.ModelAdmin):
                         exclude = []
                         for fieldname, field in form.fields.items():
                             mass_change_checkbox = '_mass_change_%s' % fieldname
-                            if not (request.POST.has_key(mass_change_checkbox) and request.POST[mass_change_checkbox] == 'on'):
+                            if not (request.POST.get(mass_change_checkbox) == 'on'):
                                 exclude.append(fieldname)
                         for exclude_fieldname in exclude:
                             del form.fields[exclude_fieldname]
@@ -182,7 +182,7 @@ class MassAdmin(admin.ModelAdmin):
                             if prefixes[prefix] != 1:
                                 prefix = "%s-%s" % (prefix, prefixes[prefix])
                             mass_change_checkbox = '_mass_change_%s' % prefix
-                            if request.POST.has_key(mass_change_checkbox) and request.POST[mass_change_checkbox] == 'on':
+                            if request.POST.get(mass_change_checkbox) == 'on':
                                 formset = FormSet(request.POST, request.FILES, instance=new_object, prefix=prefix)
                                 formsets.append(formset)
                                 
@@ -203,7 +203,10 @@ class MassAdmin(admin.ModelAdmin):
                     return self.response_change(request, new_object)
                     
                 finally:
-                    general_error = unicode(sys.exc_info()[1])
+                    if sys.version < '3':
+                       general_error = unicode(sys.exc_info()[1])
+                    else:
+                    	general_error = sys.exc_info()[1]
                     transaction.rollback()
                     
         form = ModelForm(instance=obj)
@@ -243,7 +246,7 @@ class MassAdmin(admin.ModelAdmin):
             'original': obj,
             'unique_fields': unique_fields,
             'exclude_fields': exclude_fields,
-            'is_popup': request.REQUEST.has_key('_popup'),
+            'is_popup': '_popup' in request.REQUEST,
             'media': mark_safe(media),
             #'inline_admin_formsets': inline_admin_formsets,
             'errors': helpers.AdminErrorList(form, formsets),
