@@ -1,5 +1,5 @@
 # Updates by David Burke <david@burkesoftware.com>
-# Orginal code used to be at
+# Orginal code is at
 # http://algoholic.eu/django-mass-change-admin-site-extension/
 """
 Copyright (c) 2010, Stanislaw Adaszewski
