@@ -108,10 +108,13 @@ class MassAdmin(admin.ModelAdmin):
             'obj': force_text(obj)}
 
         self.message_user(request, msg)
-        url = reverse('admin:{}_{}_changelist'.format(
-            self.model._meta.app_label,
-            self.model._meta.module_name,
-        ))
+        if request.POST.has_key('_changelist_filters'):
+			url = request.POST['_changelist_filters']
+		else:
+		    url = reverse('admin:{}_{}_changelist'.format(
+		        self.model._meta.app_label,
+		        self.model._meta.module_name,
+		    ))
         return HttpResponseRedirect(url)
 
     def render_mass_change_form(

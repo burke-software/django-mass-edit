@@ -35,6 +35,7 @@
 {% endblock %}
 <form onsubmit="return verify_checked()" {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.module_name }}_form">{% csrf_token %}{% block form_top %}{% endblock %}
 <div>
+<input type="hidden" name ="_changelist_filters" value="{{ request.META.HTTP_REFERER }}" />
 {% if is_popup %}<input type="hidden" name="_popup" value="1" />{% endif %}
 {% if save_on_top %}{% include "admin/save_only_submit_line.html" %}{% endif %}
 {% if errors %}
