@@ -198,7 +198,7 @@ class MassAdmin(admin.ModelAdmin):
         formsets = []
         if request.method == 'POST':
             # commit only when all forms are valid
-            with transaction.commit_manually():
+            with transaction.atomic():
                 try:
                     objects_count = 0
                     changed_count = 0
@@ -271,7 +271,6 @@ class MassAdmin(admin.ModelAdmin):
                     if False and changed_count != objects_count:
                         raise Exception(
                             'Some of the selected objects could\'t be changed.')
-                    transaction.commit()
                     return self.response_change(request, new_object)
 
                 finally:
@@ -279,7 +278,6 @@ class MassAdmin(admin.ModelAdmin):
                         general_error = unicode(sys.exc_info()[1])
                     else:
                         general_error = sys.exc_info()[1]
-                    transaction.rollback()
 
         form = ModelForm(instance=obj)
         prefixes = {}
