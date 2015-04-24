@@ -171,7 +171,7 @@ class MassAdmin(admin.ModelAdmin):
         queryset = getattr(
             self.admin_obj,
             "massadmin_queryset",
-            self.queryset)(request)
+            self.get_queryset)(request)
 
         object_ids = comma_separated_object_ids.split(',')
         object_id = object_ids[0]
