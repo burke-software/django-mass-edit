@@ -67,7 +67,7 @@ def mass_change_selected(modeladmin, request, queryset):
         selected.append(str(s))
     return HttpResponseRedirect(
         '../%s-masschange/%s' %
-        (modeladmin.model._meta.module_name, ','.join(selected)))
+        (modeladmin.model._meta.model_name, ','.join(selected)))
 mass_change_selected.short_description = _('Mass Edit')
 
 
@@ -113,7 +113,7 @@ class MassAdmin(admin.ModelAdmin):
         else:
             url = reverse('admin:{}_{}_changelist'.format(
                 self.model._meta.app_label,
-                self.model._meta.module_name,
+                self.model._meta.model_name,
             ))
         return HttpResponseRedirect(url)
 
@@ -171,7 +171,7 @@ class MassAdmin(admin.ModelAdmin):
         queryset = getattr(
             self.admin_obj,
             "massadmin_queryset",
-            self.queryset)(request)
+            self.get_queryset)(request)
 
         object_ids = comma_separated_object_ids.split(',')
         object_id = object_ids[0]
@@ -198,7 +198,7 @@ class MassAdmin(admin.ModelAdmin):
         formsets = []
         if request.method == 'POST':
             # commit only when all forms are valid
-            with transaction.commit_manually():
+            with transaction.atomic():
                 try:
                     objects_count = 0
                     changed_count = 0
@@ -271,7 +271,6 @@ class MassAdmin(admin.ModelAdmin):
                     if False and changed_count != objects_count:
                         raise Exception(
                             'Some of the selected objects could\'t be changed.')
-                    transaction.commit()
                     return self.response_change(request, new_object)
 
                 finally:
@@ -279,7 +278,6 @@ class MassAdmin(admin.ModelAdmin):
                         general_error = unicode(sys.exc_info()[1])
                     else:
                         general_error = sys.exc_info()[1]
-                    transaction.rollback()
 
         form = ModelForm(instance=obj)
         prefixes = {}
