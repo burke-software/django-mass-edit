@@ -36,6 +36,7 @@ from django.db import transaction, models
 from django.contrib.admin.util import unquote
 from django.contrib.admin import helpers
 from django.utils.translation import ugettext_lazy as _
+import collections
 try:
     from django.utils.encoding import force_text
 except:  # 1.4 compat
@@ -88,11 +89,11 @@ class MassAdmin(admin.ModelAdmin):
         except KeyError:
             raise Exception('Model not registered with the admin site.')
         try:
-            admin_obj_items = self.admin_obj.__class__.__dict__.iteritems()
+            admin_obj_items = iter(self.admin_obj.__class__.__dict__.items())
         except AttributeError:  # Python 2.x compat
-            admin_obj_items = self.admin_obj.__class__.__dict__.items()
+            admin_obj_items = list(self.admin_obj.__class__.__dict__.items())
         for (varname, var) in admin_obj_items:
-            if not (varname.startswith('_') or callable(var)):
+            if not (varname.startswith('_') or isinstance(var, collections.Callable)):
                 self.__dict__[varname] = var
         super(MassAdmin, self).__init__(model, admin_site)
 
@@ -108,7 +109,7 @@ class MassAdmin(admin.ModelAdmin):
             'obj': force_text(obj)}
 
         self.message_user(request, msg)
-        if request.POST.has_key('_changelist_filters'):
+        if '_changelist_filters' in request.POST:
             url = request.POST['_changelist_filters']
         else:
             url = reverse('admin:{}_{}_changelist'.format(
@@ -211,7 +212,7 @@ class MassAdmin(admin.ModelAdmin):
                             instance=obj)
 
                         exclude = []
-                        for fieldname, field in form.fields.items():
+                        for fieldname, field in list(form.fields.items()):
                             mass_change_checkbox = '_mass_change_%s' % fieldname
                             if not (
                                     request.POST.get(mass_change_checkbox) == 'on'):
@@ -274,10 +275,7 @@ class MassAdmin(admin.ModelAdmin):
                     return self.response_change(request, new_object)
 
                 finally:
-                    if sys.version < '3':
-                        general_error = unicode(sys.exc_info()[1])
-                    else:
-                        general_error = sys.exc_info()[1]
+                    general_error = sys.exc_info()[1]
 
         form = ModelForm(instance=obj)
         prefixes = {}
