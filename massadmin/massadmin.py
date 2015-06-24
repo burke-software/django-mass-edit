@@ -44,6 +44,7 @@ except:  # 1.4 compat
     from django.utils.encoding import force_unicode as force_text
 from django.utils.safestring import mark_safe
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
 from django.http import Http404, HttpResponseRedirect
 from django.utils.html import escape
 from django.contrib.contenttypes.models import ContentType
@@ -113,7 +114,6 @@ class MassAdmin(admin.ModelAdmin):
         """
         Determines the HttpResponse for the change_view stage.
         """
-        import ipdb; ipdb.set_trace()
         opts = obj._meta
 
         msg = _('Selected %(name)s were changed successfully.') % {
@@ -122,14 +122,14 @@ class MassAdmin(admin.ModelAdmin):
             'obj': force_text(obj)}
 
         self.message_user(request, msg)
-        if '_changelist_filters' in request.POST:
-            url = request.POST['_changelist_filters']
-        else:
-            url = reverse('admin:{}_{}_changelist'.format(
-                self.model._meta.app_label,
-                self.model._meta.model_name,
-            ))
-        return HttpResponseRedirect(url)
+        preserved_filters = self.get_preserved_filters(request)
+        redirect_url = reverse('admin:{}_{}_changelist'.format(
+            self.model._meta.app_label,
+            self.model._meta.model_name,
+        ))
+        redirect_url = add_preserved_filters(
+            {'preserved_filters': preserved_filters, 'opts': opts}, redirect_url)
+        return HttpResponseRedirect(redirect_url)
 
     def render_mass_change_form(
             self,
@@ -210,7 +210,7 @@ class MassAdmin(admin.ModelAdmin):
 
         ModelForm = self.get_form(request, obj)
         formsets = []
-        errors, error_list = None, None
+        errors, errors_list = None, None
         mass_changes_fields = request.POST.getlist("_mass_change")
         if request.method == 'POST':
             # commit only when all forms are valid
