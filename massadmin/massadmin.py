@@ -27,6 +27,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
+import inspect
 
 from django.contrib import admin
 from django.conf.urls import patterns
@@ -88,14 +89,25 @@ class MassAdmin(admin.ModelAdmin):
             self.admin_obj = admin_site._registry[model]
         except KeyError:
             raise Exception('Model not registered with the admin site.')
-        try:
-            admin_obj_items = iter(self.admin_obj.__class__.__dict__.items())
-        except AttributeError:  # Python 2.x compat
-            admin_obj_items = list(self.admin_obj.__class__.__dict__.items())
-        for (varname, var) in admin_obj_items:
-            if not (varname.startswith('_') or isinstance(var, collections.Callable)):
+
+        for (varname, var) in self.get_overrided_properties().items():
+            if not varname.startswith('_'):
                 self.__dict__[varname] = var
+
         super(MassAdmin, self).__init__(model, admin_site)
+
+    def get_overrided_properties(self):
+        """
+        Find all overrided properties, like form, raw_id_fields and so on.
+        """
+        items = {}
+        for cl in inspect.getmro(self.admin_obj.__class__):
+            if cl is admin.ModelAdmin:
+                break
+            for k, v in cl.__dict__.items():
+                if not k in items:
+                    items[k] = v
+        return items
 
     def response_change(self, request, obj):
         """
