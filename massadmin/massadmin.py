@@ -116,6 +116,7 @@ class MassAdmin(admin.ModelAdmin):
         """
         Determines the HttpResponse for the change_view stage.
         """
+        import ipdb; ipdb.set_trace()
         opts = obj._meta
 
         msg = _('Selected %(name)s were changed successfully.') % {
@@ -212,6 +213,8 @@ class MassAdmin(admin.ModelAdmin):
 
         ModelForm = self.get_form(request, obj)
         formsets = []
+        errors, error_list = None, None
+        mass_changes_fields = request.POST.getlist("_mass_change")
         if request.method == 'POST':
             # commit only when all forms are valid
             with transaction.atomic():
@@ -228,10 +231,9 @@ class MassAdmin(admin.ModelAdmin):
 
                         exclude = []
                         for fieldname, field in list(form.fields.items()):
-                            mass_change_checkbox = '_mass_change_%s' % fieldname
-                            if not (
-                                    request.POST.get(mass_change_checkbox) == 'on'):
+                            if fieldname not in mass_changes_fields:
                                 exclude.append(fieldname)
+
                         for exclude_fieldname in exclude:
                             del form.fields[exclude_fieldname]
 
@@ -250,8 +252,7 @@ class MassAdmin(admin.ModelAdmin):
                             prefixes[prefix] = prefixes.get(prefix, 0) + 1
                             if prefixes[prefix] != 1:
                                 prefix = "%s-%s" % (prefix, prefixes[prefix])
-                            mass_change_checkbox = '_mass_change_%s' % prefix
-                            if request.POST.get(mass_change_checkbox) == 'on':
+                            if prefix in mass_changes_fields:
                                 formset = FormSet(
                                     request.POST,
                                     request.FILES,
@@ -284,15 +285,17 @@ class MassAdmin(admin.ModelAdmin):
                                 change_message)
                             changed_count += 1
 
-                    if False and changed_count != objects_count:
-                        raise Exception(
-                            'Some of the selected objects could\'t be changed.')
-                    return self.response_change(request, new_object)
+                    if changed_count == objects_count:
+                        return self.response_change(request, new_object)
+                    else:
+                        errors = form.errors
+                        errors_list = helpers.AdminErrorList(form, formsets)
 
                 finally:
                     general_error = sys.exc_info()[1]
 
         form = ModelForm(instance=obj)
+        form._errors = errors
         prefixes = {}
         for FormSet in self.get_formsets(request, obj):
             prefix = FormSet.get_default_prefix()
@@ -336,10 +339,11 @@ class MassAdmin(admin.ModelAdmin):
             'is_popup': '_popup' in request.REQUEST,
             'media': mark_safe(media),
             #'inline_admin_formsets': inline_admin_formsets,
-            'errors': helpers.AdminErrorList(form, formsets),
+            'errors': errors_list,
             'general_error': general_error,
             'app_label': opts.app_label,
             'object_ids': comma_separated_object_ids,
+            'mass_changes_fields': mass_changes_fields,
         }
         context.update(extra_context or {})
         return self.render_mass_change_form(

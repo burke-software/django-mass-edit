@@ -20,7 +20,7 @@
     {% for line in fieldset %}
       {% if line.errors %}
         <tr>
-          <td>
+          <td colspan="2">
             {{ line.errors }}
           </td>
         </tr>
@@ -44,7 +44,8 @@
             </td>
           {% elif not field.field.name in exclude_fields %}
             <td style="vertical-align: middle;">
-              <input type="checkbox" class="update_checkbox" name="_mass_change_{{ field.field.name }}" />
+              <input type="checkbox" class="update_checkbox" name="_mass_change" value="{{ field.field.name }}"
+                {% if field.field.name in mass_changes_fields %}checked{% endif %} />
             </td>
             <td>
               {% if field.is_checkbox %}
