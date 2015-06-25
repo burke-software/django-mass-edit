@@ -31,7 +31,7 @@ import inspect
 
 from django.contrib import admin
 from django.conf.urls import patterns
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse
 from django.db import transaction, models
 from django.contrib.admin.util import unquote
@@ -60,17 +60,21 @@ urls = patterns(
      'massadmin.massadmin.mass_change_view'),
 )
 
-# noinspection PyUnusedLocal
-
 
 def mass_change_selected(modeladmin, request, queryset):
     selected_int = queryset.values_list('pk', flat=True)
     selected = []
     for s in selected_int:
         selected.append(str(s))
-    return HttpResponseRedirect(
-        '../%s-masschange/%s' %
-        (modeladmin.model._meta.model_name, ','.join(selected)))
+
+    redirect_url = '../%s-masschange/%s' % (
+        modeladmin.model._meta.model_name, ','.join(selected))
+    redirect_url = add_preserved_filters(
+        {'preserved_filters': modeladmin.get_preserved_filters(request),
+         'opts': queryset.model._meta},
+        redirect_url)
+
+    return HttpResponseRedirect(redirect_url)
 mass_change_selected.short_description = _('Mass Edit')
 
 
@@ -78,8 +82,6 @@ def mass_change_view(request, app_name, model_name, object_ids):
     model = models.get_model(app_name, model_name)
     ma = MassAdmin(model, admin.site)
     return ma.mass_change_view(request, object_ids)
-
-# noinspection PyRedeclaration
 mass_change_view = staff_member_required(mass_change_view)
 
 
@@ -214,8 +216,8 @@ class MassAdmin(admin.ModelAdmin):
         mass_changes_fields = request.POST.getlist("_mass_change")
         if request.method == 'POST':
             # commit only when all forms are valid
-            with transaction.atomic():
-                try:
+            try:
+                with transaction.atomic():
                     objects_count = 0
                     changed_count = 0
                     objects = queryset.filter(pk__in=object_ids)
@@ -287,9 +289,11 @@ class MassAdmin(admin.ModelAdmin):
                     else:
                         errors = form.errors
                         errors_list = helpers.AdminErrorList(form, formsets)
+                        # Raise error for rollback transaction in atomic block
+                        raise ValidationError("Not all forms is correct")
 
-                finally:
-                    general_error = sys.exc_info()[1]
+            except:
+                general_error = sys.exc_info()[1]
 
         form = ModelForm(instance=obj)
         form._errors = errors
