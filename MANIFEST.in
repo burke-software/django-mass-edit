@@ -2,3 +2,4 @@ include LICENSE
 recursive-include massadmin/templates *
 recursive-include massadmin/templatetags *
 recursive-include massadmin/locale *
+recursive-exclude mass_demo *
