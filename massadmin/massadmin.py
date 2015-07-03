@@ -27,7 +27,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
-import inspect
+import types
 
 from django.contrib import admin
 from django.conf.urls import patterns
@@ -94,7 +94,7 @@ class MassAdmin(admin.ModelAdmin):
             raise Exception('Model not registered with the admin site.')
 
         for (varname, var) in self.get_overrided_properties().items():
-            if not varname.startswith('_'):
+            if not varname.startswith('_') and not isinstance(var, types.FunctionType):
                 self.__dict__[varname] = var
 
         super(MassAdmin, self).__init__(model, admin_site)
@@ -104,7 +104,7 @@ class MassAdmin(admin.ModelAdmin):
         Find all overrided properties, like form, raw_id_fields and so on.
         """
         items = {}
-        for cl in inspect.getmro(self.admin_obj.__class__):
+        for cl in self.admin_obj.__class__.mro():
             if cl is admin.ModelAdmin:
                 break
             for k, v in cl.__dict__.items():
@@ -184,6 +184,7 @@ class MassAdmin(admin.ModelAdmin):
 
         # Allow model to hide some fields for mass admin
         exclude_fields = getattr(self.admin_obj, "massadmin_exclude", ())
+
         queryset = getattr(
             self.admin_obj,
             "massadmin_queryset",
