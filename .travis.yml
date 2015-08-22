@@ -7,7 +7,7 @@ install:
   - pip install -q -e . --use-mirrors
   - pip install coveralls
 # command to run tests
-script: python manage.py test
+script:
   - coverage run --source=massadmin manage.py test
 after_success:
   coveralls
