@@ -5,5 +5,10 @@ python:
 # command to install dependencies
 install:
   - pip install -q -e . --use-mirrors
+  - pip install coveralls
 # command to run tests
 script: python manage.py test
+  - coverage run --source=massadmin manage.py test
+after_success:
+  coveralls
+sudo: false
