@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/burke-software/django-mass-edit.svg?branch=master)](https://travis-ci.org/burke-software/django-mass-edit)
+
 From Stanislaw Adaszewski's [blog](http://algoholic.eu/django-mass-change-admin-site-extension/ ). 
 I've fixed bugs and made changes to make it a production friendly drop-in Django app for bulk changes in Django's 
 admin interface.
