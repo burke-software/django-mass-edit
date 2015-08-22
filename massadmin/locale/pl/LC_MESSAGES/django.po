@@ -1,0 +1,77 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-07-24 16:56+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
+
+#: massadmin.py:72
+msgid "Mass Edit"
+msgstr "Edycja masowa"
+
+#: massadmin.py:106
+#, python-format
+msgid "Selected %(name)s were changed successfully."
+msgstr "Wybrane %(name)s zostały zmienione poprawnie."
+
+#: massadmin.py:190
+#, python-format
+msgid "%(name)s object with primary key %(key)r does not exist."
+msgstr "Obiekt %(name)s z kluczem głównym %(key)r nie istnieje."
+
+#: massadmin.py:315
+#, python-format
+msgid "Change %s"
+msgstr "Zmień %s"
+
+#: templates/admin/includes/mass_fieldset.html:14
+msgid "Mass Update?"
+msgstr "Edycja Masowa?"
+
+#: templates/admin/includes/mass_fieldset.html:17
+msgid "Field"
+msgstr "Pole"
+
+#: templates/admin/includes/mass_fieldset.html:36
+msgid "is read only."
+msgstr "jest tylko do odczytu."
+
+#: templates/admin/includes/mass_fieldset.html:43
+msgid "is unique."
+msgstr "jest unikalne."
+
+#: templates/admin/mass_change_form.html:25
+msgid "Home"
+msgstr "Początek"
+
+#: templates/admin/mass_change_form.html:28
+msgid "Add"
+msgstr "Dodaj"
+
+#: templates/admin/mass_change_form.html:43
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] "Popraw błąd poniżej."
+msgstr[1] "Popraw błędy poniżej."
+
+#: templates/admin/mass_change_form.html:56
+msgid "Mass Change"
+msgstr "Zmiana masowa"
+
+#: templates/admin/save_only_submit_line.html:3
+msgid "Save"
+msgstr "Zapisz"
