@@ -33,3 +33,9 @@ You may exclude some fields like this:
 
 You can also add or remove the "action" to models if you don't want it global. 
 See [Django Docs on the subject](https://docs.djangoproject.com/en/dev/ref/contrib/admin/actions/#disabling-all-actions-for-a-particular-modeladmin)
+
+# Hacking and pull requests
+
+This project could use some love. It has few unit test and old code that could be refactored.
+When you make a pull request - please include a unit test. 
+If you want to take on improving the project let me know by opening an issue.
