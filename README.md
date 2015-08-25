@@ -14,7 +14,6 @@ Image was taken using Grappelli
 - Database transactions ensure either all or no objects are changed
 
 # Not implemented
-- Custom forms
 - No support for inlines. Original had this. I commented it out because I felt it was very buggy.
 - Validation errors do not show up by the field they should
 
