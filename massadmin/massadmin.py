@@ -28,9 +28,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 import types
+import sys
 
 from django.contrib import admin
-from django.conf.urls import patterns
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse
 from django.db import transaction, models
@@ -40,14 +40,12 @@ except ImportError:
     from django.contrib.admin.util import unquote
 from django.contrib.admin import helpers
 from django.utils.translation import ugettext_lazy as _
-import collections
 try:
     from django.utils.encoding import force_text
 except:  # 1.4 compat
     from django.utils.encoding import force_unicode as force_text
 from django.utils.safestring import mark_safe
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
 from django.http import Http404, HttpResponseRedirect
 from django.utils.html import escape
 from django.contrib.contenttypes.models import ContentType
@@ -55,13 +53,12 @@ from django import template
 from django.shortcuts import render_to_response
 from django.forms.formsets import all_valid
 
-import sys
-
-urls = patterns(
-    '',
-    (r'(?P<app_name>[^/])/(?P<model_name>[^/]+)-masschange/(?P<object_ids>[0-9,]+)/$',
-     'massadmin.massadmin.mass_change_view'),
-)
+try:
+    from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
+except ImportError:  # django < 1.6 compat
+    def add_preserved_filters(context, url, *args, **kwargs):
+        # Do nothing, just return url
+        return url
 
 
 def mass_change_selected(modeladmin, request, queryset):
@@ -187,11 +184,10 @@ class MassAdmin(admin.ModelAdmin):
 
         # Allow model to hide some fields for mass admin
         exclude_fields = getattr(self.admin_obj, "massadmin_exclude", ())
-
         queryset = getattr(
             self.admin_obj,
             "massadmin_queryset",
-            self.get_queryset)(request)
+            self.get_query_set)(request)
 
         object_ids = comma_separated_object_ids.split(',')
         object_id = object_ids[0]
@@ -201,6 +197,7 @@ class MassAdmin(admin.ModelAdmin):
         except model.DoesNotExist:
             obj = None
 
+        # TODO It's necessary to check permission and existence for all object
         if not self.has_change_permission(request, obj):
             raise PermissionDenied
 
@@ -210,9 +207,6 @@ class MassAdmin(admin.ModelAdmin):
                     'name': force_text(
                         opts.verbose_name),
                     'key': escape(object_id)})
-
-        if request.method == 'POST' and "_saveasnew" in request.POST:
-            return self.add_view(request, form_url='../add/')
 
         ModelForm = self.get_form(request, obj)
         formsets = []
@@ -264,7 +258,7 @@ class MassAdmin(admin.ModelAdmin):
                                 formsets.append(formset)
 
                         if all_valid(formsets) and form_validated:
-                            #self.admin_obj.save_model(request, new_object, form, change=True)
+                            # self.admin_obj.save_model(request, new_object, form, change=True)
                             self.save_model(
                                 request,
                                 new_object,
