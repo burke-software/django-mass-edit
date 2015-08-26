@@ -49,23 +49,18 @@ from django.contrib.contenttypes.models import ContentType
 from django import template
 from django.shortcuts import render_to_response
 from django.forms.formsets import all_valid
-
-try:
-    from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
-except ImportError:  # django < 1.6 compat
-    def add_preserved_filters(context, url, *args, **kwargs):
-        # Do nothing, just return url
-        return url
+from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
 
 
 def mass_change_selected(modeladmin, request, queryset):
-    selected_int = queryset.values_list('pk', flat=True)
-    selected = []
-    for s in selected_int:
-        selected.append(str(s))
+    selected = queryset.values_list('pk', flat=True)
 
-    redirect_url = '../%s-masschange/%s' % (
-        modeladmin.model._meta.model_name, ','.join(selected))
+    opts = modeladmin.model._meta
+    redirect_url = reverse(
+        "massadmin_change_view",
+        kwargs={"app_name": opts.app_label,
+                "model_name": opts.model_name,
+                "object_ids": ",".join(str(s) for s in selected)})
     redirect_url = add_preserved_filters(
         {'preserved_filters': modeladmin.get_preserved_filters(request),
          'opts': queryset.model._meta},
@@ -121,11 +116,11 @@ class MassAdmin(admin.ModelAdmin):
             'obj': force_text(obj)}
 
         self.message_user(request, msg)
-        preserved_filters = self.get_preserved_filters(request)
         redirect_url = reverse('admin:{}_{}_changelist'.format(
             self.model._meta.app_label,
             self.model._meta.model_name,
         ))
+        preserved_filters = self.get_preserved_filters(request)
         redirect_url = add_preserved_filters(
             {'preserved_filters': preserved_filters, 'opts': opts}, redirect_url)
         return HttpResponseRedirect(redirect_url)
@@ -184,7 +179,7 @@ class MassAdmin(admin.ModelAdmin):
         queryset = getattr(
             self.admin_obj,
             "massadmin_queryset",
-            self.get_query_set)(request)
+            self.get_queryset)(request)
 
         object_ids = comma_separated_object_ids.split(',')
         object_id = object_ids[0]
