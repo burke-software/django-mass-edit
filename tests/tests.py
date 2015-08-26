@@ -1,33 +1,28 @@
+import urlparse
 from django.contrib.auth.models import User
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-
-from .models import CustomAdminModel, InheritedAdminModel
-from .admin import CustomAdminForm, BaseAdmin, InheritedAdmin
 from massadmin.massadmin import MassAdmin
+
+from .admin import CustomAdminForm, BaseAdmin, InheritedAdmin
+from .models import CustomAdminModel, InheritedAdminModel
 
 
 def get_massadmin_url(objects):
     if not hasattr(objects, "__iter__"):
         objects = [objects]
     opts = objects[0]._meta
-    try:
-        model_name = opts.model_name
-    except AttributeError:
-        model_name = opts.module_name
     return reverse("massadmin_change_view",
-                   kwargs={"app_name": opts.app_label, "model_name": model_name,
+                   kwargs={"app_name": opts.app_label,
+                           "model_name": opts.model_name,
                            "object_ids": ",".join(str(o.pk) for o in objects)})
 
 
 def get_changelist_url(model):
     opts = model._meta
-    try:
-        model_name = opts.model_name
-    except AttributeError:
-        model_name = opts.module_name
-    return reverse("admin:{}_{}_changelist".format(opts.app_label, model_name))
+    return reverse("admin:{}_{}_changelist".format(
+        opts.app_label, opts.model_name))
 
 
 class AdminViewTest(TestCase):
@@ -56,7 +51,24 @@ class AdminViewTest(TestCase):
     def test_preserve_filters(self):
         """ Preserve filters which was choosed in lookup form
         """
-        self.fail()
+        model = CustomAdminModel.objects.create(name="aaaa")
+        # filter model list by some parameter
+        query = "name__startswith=a"
+        changelist_url = get_changelist_url(CustomAdminModel) + "?" + query
+        # choose mass change action
+        response = self.client.post(changelist_url,
+                                    {"action": "mass_change_selected",
+                                     "_selected_action": model.pk})
+        self.assertEqual(response.status_code, 302)
+        mass_change_url = response.get("Location")
+        # filters add to redirect url
+        self.assertEqual(urlparse.parse_qs(urlparse.urlparse(mass_change_url).query),
+                         {"_changelist_filters": [query]})
+        # save mass change form with preserved filters
+        response = self.client.post(mass_change_url,
+                                    {"_mass_change": "name", "name": "new name"})
+        # we are redirected to changelist with filters
+        self.assertRedirects(response, changelist_url)
 
     def test_invalid_form(self):
         """ Save nothing if some forms are invalid
