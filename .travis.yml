@@ -1,14 +1,12 @@
 language: python
-
 python:
   - "2.7"
   - "3.4"
-
 env:
   - DJANGO=1.6
   - DJANGO=1.7
   - DJANGO=1.8
-
+# command to install dependencies
 install:
   - pip install Django==$DJANGO --use-mirrors
   - pip install -q -e . --use-mirrors
