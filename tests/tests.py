@@ -1,4 +1,4 @@
-from django.utils.six.moves.urllib import parse
+from six.moves.urllib import parse
 from django.contrib.auth.models import User
 from django.contrib import admin
 from django.core.urlresolvers import reverse
