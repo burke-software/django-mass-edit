@@ -1,4 +1,4 @@
-import urlparse
+from django.utils.six.moves.urllib import parse
 from django.contrib.auth.models import User
 from django.contrib import admin
 from django.core.urlresolvers import reverse
@@ -62,7 +62,7 @@ class AdminViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
         mass_change_url = response.get("Location")
         # filters add to redirect url
-        self.assertEqual(urlparse.parse_qs(urlparse.urlparse(mass_change_url).query),
+        self.assertEqual(parse.parse_qs(parse.urlparse(mass_change_url).query),
                          {"_changelist_filters": [query]})
         # save mass change form with preserved filters
         response = self.client.post(mass_change_url,
