@@ -1,0 +1,3 @@
+django
+six
+coveralls
