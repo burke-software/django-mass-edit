@@ -34,6 +34,11 @@ from django.contrib import admin
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse
 from django.db import transaction, models
+try:  # Django>=1.9
+    from django.apps import apps
+    get_model = apps.get_model
+except ImportError:
+    from django.db.models import get_model
 try:
     from django.contrib.admin.utils import unquote
 except ImportError:
@@ -48,7 +53,6 @@ from django.utils.safestring import mark_safe
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import Http404, HttpResponseRedirect
 from django.utils.html import escape
-from django.contrib.contenttypes.models import ContentType
 from django import template
 from django.shortcuts import render_to_response
 from django.forms.formsets import all_valid
@@ -74,10 +78,16 @@ mass_change_selected.short_description = _('Mass Edit')
 
 
 def mass_change_view(request, app_name, model_name, object_ids):
-    model = models.get_model(app_name, model_name)
+    model = get_model(app_name, model_name)
     ma = MassAdmin(model, admin.site)
     return ma.mass_change_view(request, object_ids)
 mass_change_view = staff_member_required(mass_change_view)
+
+def get_formsets(model, request, obj=None):
+    try:  # Django>=1.9
+        return [f for f,_ in model.get_formsets_with_inlines(request, obj)]
+    except AttributeError:
+        return model.get_formsets(request, obj)
 
 
 class MassAdmin(admin.ModelAdmin):
@@ -138,6 +148,7 @@ class MassAdmin(admin.ModelAdmin):
             obj=None):
         opts = self.model._meta
         app_label = opts.app_label
+        from django.contrib.contenttypes.models import ContentType
         context.update({
             'add': add,
             'change': change,
@@ -239,7 +250,7 @@ class MassAdmin(admin.ModelAdmin):
                             form_validated = False
                             new_object = obj
                         prefixes = {}
-                        for FormSet in self.get_formsets(request, new_object):
+                        for FormSet in get_formsets(self, request, new_object):
                             prefix = FormSet.get_default_prefix()
                             prefixes[prefix] = prefixes.get(prefix, 0) + 1
                             if prefixes[prefix] != 1:
@@ -291,7 +302,7 @@ class MassAdmin(admin.ModelAdmin):
         form = ModelForm(instance=obj)
         form._errors = errors
         prefixes = {}
-        for FormSet in self.get_formsets(request, obj):
+        for FormSet in get_formsets(self, request, obj):
             prefix = FormSet.get_default_prefix()
             prefixes[prefix] = prefixes.get(prefix, 0) + 1
             if prefixes[prefix] != 1:
@@ -330,7 +341,7 @@ class MassAdmin(admin.ModelAdmin):
             'original': obj,
             'unique_fields': unique_fields,
             'exclude_fields': exclude_fields,
-            'is_popup': '_popup' in request.REQUEST,
+            'is_popup': '_popup' in request.GET or '_popup' in request.POST,
             'media': mark_safe(media),
             #'inline_admin_formsets': inline_admin_formsets,
             'errors': errors_list,
