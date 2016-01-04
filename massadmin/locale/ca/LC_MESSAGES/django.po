@@ -20,7 +20,7 @@ msgstr ""
 
 #: massadmin/massadmin.py:77
 msgid "Mass Edit"
-msgstr "Editar de forma massiva"
+msgstr "Editar massivament"
 
 #: massadmin/massadmin.py:126
 #, python-format
@@ -39,7 +39,7 @@ msgstr "Modificar %s"
 
 #: massadmin/templates/admin/includes/mass_fieldset.html:14
 msgid "Mass Update?"
-msgstr "¿Actualitzar de forma massiva?"
+msgstr "¿Actualitzar massivament?"
 
 #: massadmin/templates/admin/includes/mass_fieldset.html:17
 msgid "Field"
@@ -69,7 +69,7 @@ msgstr[1] "Siusplau, corretgeixi els següents errors."
 
 #: massadmin/templates/admin/mass_change_form.html:56
 msgid "Mass Change"
-msgstr "Canviar de forma massiva"
+msgstr "Canviar massivament"
 
 #: massadmin/templates/admin/save_only_submit_line.html:3
 msgid "Save"
