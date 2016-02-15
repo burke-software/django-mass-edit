@@ -55,7 +55,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.http import Http404, HttpResponseRedirect
 from django.utils.html import escape
 from django import template
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.forms.formsets import all_valid
 from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
 
@@ -171,10 +171,9 @@ class MassAdmin(admin.ModelAdmin):
             'save_as': self.save_as,
             'save_on_top': self.save_on_top,
         })
-        context_instance = template.RequestContext(
+        request.current_app = self.admin_site.name
+        return render(
             request,
-            current_app=self.admin_site.name)
-        return render_to_response(
             self.change_form_template or [
                 "admin/%s/%s/mass_change_form.html" %
                 (app_label,
@@ -182,8 +181,7 @@ class MassAdmin(admin.ModelAdmin):
                 "admin/%s/mass_change_form.html" %
                 app_label,
                 "admin/mass_change_form.html"],
-            context,
-            context_instance=context_instance)
+            context)
 
     def mass_change_view(
             self,
@@ -326,7 +324,11 @@ class MassAdmin(admin.ModelAdmin):
 
         # We don't want the user trying to mass change unique fields!
         unique_fields = []
-        for field_name in model._meta.get_all_field_names():
+        try:  # Django >= 1.9
+            fields = model._meta.get_fields()
+        except:
+            fields = model._meta.get_all_field_names()
+        for field_name in fields:
             try:
                 field = model._meta.get_field(field_name)
                 if field.unique:
