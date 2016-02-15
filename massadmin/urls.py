@@ -1,8 +1,9 @@
-from django.conf.urls import url, patterns
+from django.conf.urls import url
+from .massadmin import mass_change_view
 
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'(?P<app_name>[^/]+)/(?P<model_name>[^/]+)-masschange/(?P<object_ids>[\w,\.]+)/$',
-     'massadmin.massadmin.mass_change_view',
+     mass_change_view,
      name='massadmin_change_view'),
-)
+]
