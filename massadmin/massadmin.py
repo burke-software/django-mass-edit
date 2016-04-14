@@ -93,11 +93,11 @@ def get_mass_change_redirect_url(model_meta, pk_list, session):
 mass_change_selected.short_description = _('Mass Edit')
 
 
-def mass_change_view(request, app_name, model_name, object_ids):
+def mass_change_view(request, app_name, model_name, object_ids, admin_site=None):
     if object_ids.startswith("session-"):
         object_ids = request.session.get(object_ids)
     model = get_model(app_name, model_name)
-    ma = MassAdmin(model, admin.site)
+    ma = MassAdmin(model, admin_site or admin.site)
     return ma.mass_change_view(request, object_ids)
 mass_change_view = staff_member_required(mass_change_view)
 
