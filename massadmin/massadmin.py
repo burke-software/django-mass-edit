@@ -77,9 +77,9 @@ def mass_change_selected(modeladmin, request, queryset):
 mass_change_selected.short_description = _('Mass Edit')
 
 
-def mass_change_view(request, app_name, model_name, object_ids):
+def mass_change_view(request, app_name, model_name, object_ids, admin_site=None):
     model = get_model(app_name, model_name)
-    ma = MassAdmin(model, admin.site)
+    ma = MassAdmin(model, admin_site or admin.site)
     return ma.mass_change_view(request, object_ids)
 mass_change_view = staff_member_required(mass_change_view)
 
