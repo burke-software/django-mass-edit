@@ -63,11 +63,15 @@ def mass_change_selected(modeladmin, request, queryset):
     selected = queryset.values_list('pk', flat=True)
 
     opts = modeladmin.model._meta
+    object_ids = ",".join(str(s) for s in selected)
+    if len(object_ids) > 500:
+        request.session['_object_ids'] = object_ids
+        object_ids = "session"
     redirect_url = reverse(
         "massadmin_change_view",
         kwargs={"app_name": opts.app_label,
                 "model_name": opts.model_name,
-                "object_ids": ",".join(str(s) for s in selected)})
+                "object_ids": object_ids})
     redirect_url = add_preserved_filters(
         {'preserved_filters': modeladmin.get_preserved_filters(request),
          'opts': queryset.model._meta},
@@ -78,6 +82,8 @@ mass_change_selected.short_description = _('Mass Edit')
 
 
 def mass_change_view(request, app_name, model_name, object_ids):
+    if object_ids == "session":
+        object_ids = request.session.get('_object_ids')
     model = get_model(app_name, model_name)
     ma = MassAdmin(model, admin.site)
     return ma.mass_change_view(request, object_ids)
