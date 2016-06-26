@@ -18,7 +18,6 @@ script:
   - coverage run --source=massadmin manage.py test --settings=tests.settings
 after_success:
   coveralls
-sudo: false
 matrix:
   allow_failures:
      - env: DJANGO='https://github.com/django/django/archive/master.tar.gz'
