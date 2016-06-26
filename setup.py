@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = "django-mass-edit",
-    version = "2.6",
+    version = "2.7",
     author = "David Burke",
     author_email = "david@burkesoftware.com",
     description = ("Make bulk changes in the Django admin interface"),
@@ -17,7 +17,7 @@ setup(
         'Framework :: Django',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
         "License :: OSI Approved :: BSD License",
