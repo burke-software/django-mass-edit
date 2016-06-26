@@ -41,3 +41,9 @@ See [Django Docs on the subject](https://docs.djangoproject.com/en/dev/ref/contr
 This project could use some love. It has few unit test and old code that could be refactored.
 When you make a pull request - please include a unit test. 
 If you want to take on improving the project let me know by opening an issue.
+
+New maintainers welcome. I (bufke) will only be providing minimal support to keep the project running on modern versions of Django. Open an issue if you are interested.
+
+# Changelog
+
+2.6 - Added Django 1.10 support
