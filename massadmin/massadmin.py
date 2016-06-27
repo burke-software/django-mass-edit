@@ -75,7 +75,7 @@ def mass_change_selected(modeladmin, request, queryset):
 def get_mass_change_redirect_url(model_meta, pk_list, session):
     object_ids = ",".join(str(s) for s in pk_list)
     if len(object_ids) > 500:
-        hash_id = "session-%s" % hashlib.md5(object_ids).hexdigest()
+        hash_id = "session-%s" % hashlib.md5(object_ids.encode('utf-8')).hexdigest()
         session[hash_id] = object_ids
         session.save()
         object_ids = hash_id
