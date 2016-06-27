@@ -63,23 +63,30 @@ from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
 def mass_change_selected(modeladmin, request, queryset):
     selected = queryset.values_list('pk', flat=True)
 
-    opts = modeladmin.model._meta
-    object_ids = ",".join(str(s) for s in selected)
-    if len(object_ids) > 500:
-        hash_id = "session-%s" % hashlib.md5(object_ids).hexdigest()
-        request.session[hash_id] = object_ids
-        object_ids = hash_id
-    redirect_url = reverse(
-        "massadmin_change_view",
-        kwargs={"app_name": opts.app_label,
-                "model_name": opts.model_name,
-                "object_ids": object_ids})
+    redirect_url = get_mass_change_redirect_url(modeladmin.model._meta, selected, request.session)
     redirect_url = add_preserved_filters(
         {'preserved_filters': modeladmin.get_preserved_filters(request),
          'opts': queryset.model._meta},
         redirect_url)
 
     return HttpResponseRedirect(redirect_url)
+
+
+def get_mass_change_redirect_url(model_meta, pk_list, session):
+    object_ids = ",".join(str(s) for s in pk_list)
+    if len(object_ids) > 500:
+        hash_id = "session-%s" % hashlib.md5(object_ids).hexdigest()
+        session[hash_id] = object_ids
+        session.save()
+        object_ids = hash_id
+    redirect_url = reverse(
+        "massadmin_change_view",
+        kwargs={"app_name": model_meta.app_label,
+                "model_name": model_meta.model_name,
+                "object_ids": object_ids})
+    return redirect_url
+
+
 mass_change_selected.short_description = _('Mass Edit')
 
 
