@@ -27,6 +27,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
+import hashlib
 import types
 import sys
 
@@ -65,8 +66,9 @@ def mass_change_selected(modeladmin, request, queryset):
     opts = modeladmin.model._meta
     object_ids = ",".join(str(s) for s in selected)
     if len(object_ids) > 500:
-        request.session['_object_ids'] = object_ids
-        object_ids = "session"
+        hash_id = "session-%s" % hashlib.md5(object_ids).hexdigest()
+        request.session[hash_id] = object_ids
+        object_ids = hash_id
     redirect_url = reverse(
         "massadmin_change_view",
         kwargs={"app_name": opts.app_label,
@@ -82,8 +84,8 @@ mass_change_selected.short_description = _('Mass Edit')
 
 
 def mass_change_view(request, app_name, model_name, object_ids):
-    if object_ids == "session":
-        object_ids = request.session.get('_object_ids')
+    if object_ids.startswith("session-"):
+        object_ids = request.session.get(object_ids)
     model = get_model(app_name, model_name)
     ma = MassAdmin(model, admin.site)
     return ma.mass_change_view(request, object_ids)
