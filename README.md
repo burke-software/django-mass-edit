@@ -46,4 +46,6 @@ New maintainers welcome. I (bufke) will only be providing minimal support to kee
 
 # Changelog
 
+3.0 - Use sessions instead of GET params for id passing. Started using git tags for nicer release tracking.
+
 2.6 - Added Django 1.10 support
