@@ -3,20 +3,17 @@ from django.contrib.auth.models import User
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from massadmin.massadmin import MassAdmin
+from massadmin.massadmin import MassAdmin, get_mass_change_redirect_url
 
 from .admin import CustomAdminForm, BaseAdmin, InheritedAdmin
 from .models import CustomAdminModel, InheritedAdminModel
 
 
-def get_massadmin_url(objects):
+def get_massadmin_url(objects,session):
     if not hasattr(objects, "__iter__"):
         objects = [objects]
     opts = objects[0]._meta
-    return reverse("massadmin_change_view",
-                   kwargs={"app_name": opts.app_label,
-                           "model_name": opts.model_name,
-                           "object_ids": ",".join(str(o.pk) for o in objects)})
+    return get_mass_change_redirect_url(opts,[o.pk for o in objects],session)
 
 
 def get_changelist_url(model):
@@ -33,14 +30,20 @@ class AdminViewTest(TestCase):
         self.client.login(username='temporary', password='temporary')
 
     def test_massadmin_form_generation(self):
-        response = self.client.get(get_massadmin_url(self.user))
+        response = self.client.get(get_massadmin_url(self.user, self.client.session))
         self.assertContains(response, 'First name')
+
+    def test_massadmin_form_generation_with_many_objects(self):
+        models = [CustomAdminModel.objects.create(name="model {}".format(i))
+                  for i in range(0, 2000)]
+        response = self.client.get(get_massadmin_url(models, self.client.session))
+        self.assertContains(response, 'Change custom admin model')
 
     def test_update(self):
         models = [CustomAdminModel.objects.create(name="model {}".format(i))
                   for i in range(0, 3)]
 
-        response = self.client.post(get_massadmin_url(models),
+        response = self.client.post(get_massadmin_url(models, self.client.session),
                                     {"_mass_change": "name",
                                      "name": "new name"})
         self.assertRedirects(response, get_changelist_url(CustomAdminModel))
@@ -76,7 +79,7 @@ class AdminViewTest(TestCase):
         models = [CustomAdminModel.objects.create(name="model {}".format(i))
                   for i in range(0, 3)]
 
-        response = self.client.post(get_massadmin_url(models),
+        response = self.client.post(get_massadmin_url(models, self.client.session),
                                     {"_mass_change": "name",
                                      "name": "invalid {}".format(models[-1].pk)})
         self.assertEqual(response.status_code, 200)
