@@ -23,7 +23,7 @@ Image was taken using Grappelli
 # Installation
 
 1. `pip install django-mass-edit`
-2. In settings.py, add massadmin to installed apps
+2. In settings.py, add `'massadmin'` to installed apps
 3. In urls.py, add:
 ```
     from massadmin import urls as massadmin_urls
