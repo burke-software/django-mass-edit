@@ -29,7 +29,7 @@ Image was taken using Grappelli
     from massadmin import urls as massadmin_urls
     from massadmin import mass_change_selected
     admin.site.add_action(mass_change_selected)
-   
+
    and add to urls:
    
     url(r'', include(massadmin_urls)),
