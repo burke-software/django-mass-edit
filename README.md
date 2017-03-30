@@ -24,9 +24,16 @@ Image was taken using Grappelli
 
 1. `pip install django-mass-edit`
 2. In settings.py, add massadmin to installed apps
-3. In settings.py, uncomment/add django.template.loaders.eggs.Loader in TEMPLATE_LOADERS section
-4. Add `(r'^admin/', include("massadmin.urls")),` to urls.py
+3. In urls.py, add:
 
+    from massadmin import urls as massadmin_urls
+    from massadmin import mass_change_selected
+    admin.site.add_action(mass_change_selected)
+   
+   and add to urls:
+   
+    url(r'', include(massadmin_urls)),
+    
 ## Optional
 You may exclude some fields like this:
 
