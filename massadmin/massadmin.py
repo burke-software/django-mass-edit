@@ -33,7 +33,10 @@ import sys
 
 from django.contrib import admin
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.core.urlresolvers import reverse
+try:
+    from django.urls import reverse
+except ImportError:  # Django<2.0
+    from django.core.urlresolvers import reverse
 from django.db import transaction, models
 try:  # Django>=1.9
     from django.apps import apps

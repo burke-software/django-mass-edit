@@ -10,6 +10,6 @@ class CustomAdminModel(models.Model):
 
 class InheritedAdminModel(models.Model):
     name = models.CharField(max_length=32)
-    fk_field = models.ForeignKey(CustomAdminModel, null=True, blank=True)
+    fk_field = models.ForeignKey(CustomAdminModel, null=True, blank=True, on_delete=models.CASCADE)
     class Meta:
         app_label = "tests"
