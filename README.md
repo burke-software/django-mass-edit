@@ -43,9 +43,3 @@ When you make a pull request - please include a unit test.
 If you want to take on improving the project let me know by opening an issue.
 
 New maintainers welcome. I (bufke) will only be providing minimal support to keep the project running on modern versions of Django. Open an issue if you are interested.
-
-# Changelog
-
-3.0 - Use sessions instead of GET params for id passing. Started using git tags for nicer release tracking.
-
-2.6 - Added Django 1.10 support
