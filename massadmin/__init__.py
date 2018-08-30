@@ -25,7 +25,5 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 '''
 
-from django.contrib import admin
-from .massadmin import mass_change_selected
+default_app_config = 'massadmin.apps.MassAdminConfig'
 
-admin.site.add_action(mass_change_selected)
