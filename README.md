@@ -30,11 +30,27 @@ Image was taken using Grappelli
 ## Optional
 You may exclude some fields like this:
 
+    ```python
     class PollAdmin(admin.ModelAdmin):
         massadmin_exclude = ['user', ]
+    ```
 
 You can also add or remove the "action" to models if you don't want it global. 
 See [Django Docs on the subject](https://docs.djangoproject.com/en/dev/ref/contrib/admin/actions/#disabling-all-actions-for-a-particular-modeladmin)
+
+## Custom AdminSite
+    Django allows [customization of AdminSites](https://docs.djangoproject.com/en/1.9/ref/contrib/admin/#customizing-adminsite)
+    If you want to work with a custom AdminSite by passing the custom site to the view (it is also necessary to add the `mass_change_selected` action to the custom site):
+
+        ```python
+        from massadmin import mass_change_selected
+
+        admin_site = MyCustomAdminSite(name='custom_admin')
+        admin_site.add_action(mass_change_selected)
+
+        url(r'^admin/', include(massadmin.urls), kwargs={'admin_site': admin_site}),
+        ```
+
 
 # Hacking and pull requests
 
