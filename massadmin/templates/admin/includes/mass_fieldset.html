@@ -47,7 +47,7 @@
               <input type="checkbox" class="update_checkbox" name="_mass_change" value="{{ field.field.name }}"
                 {% if field.field.name in mass_changes_fields %}checked{% endif %} />
             </td>
-            <td>
+            <td class="form-row field-{{ field.field.name }}">
               {% if field.is_checkbox %}
                 {{ field.field }}{{ field.label_tag }}
               {% else %}
