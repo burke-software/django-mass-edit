@@ -376,3 +376,9 @@ class MassAdmin(admin.ModelAdmin):
             context,
             change=True,
             obj=obj)
+
+
+class MassEditMixin:
+    actions = (
+        mass_change_selected,
+    )
