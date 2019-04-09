@@ -1,3 +1,4 @@
 *.pyc
 settings_local.py
 django_mass_edit.egg-info
+.idea
