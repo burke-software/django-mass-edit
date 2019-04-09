@@ -1,5 +1,7 @@
 from django.apps import AppConfig
 from django.contrib import admin
+from . import settings
+
 
 class MassAdminConfig(AppConfig):
     name = 'massadmin'
@@ -8,4 +10,5 @@ class MassAdminConfig(AppConfig):
     def ready(self):
         from .massadmin import mass_change_selected
 
-        admin.site.add_action(mass_change_selected)
+        if settings.ADD_ACTION_GLOBALLY:
+            admin.site.add_action(mass_change_selected)

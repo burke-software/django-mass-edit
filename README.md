@@ -50,6 +50,26 @@ See [Django Docs on the subject](https://docs.djangoproject.com/en/dev/ref/contr
         url(r'^admin/', include(massadmin.urls), kwargs={'admin_site': admin_site}),
         ```
 
+## Settings
+
+By default, all models registered in the admin will get `Mass Edit` action.
+
+If you wish to disable this, add this to settings file:ž
+
+``` python
+MASSEDIT = {
+    'ADD_ACTION_GLOBALLY': False,
+}
+``` 
+
+Then, to add the mass edit action to specific models, use the provided mixin:
+``` python
+from massedit.massedit import MassEditMixin
+
+class MyModelAdmin(MassEditMixin, admin.ModelAdmin):
+    ...
+``` 
+
 
 # Hacking and pull requests
 
