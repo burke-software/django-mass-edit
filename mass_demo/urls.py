@@ -4,6 +4,6 @@ from massadmin import urls as massadmin_urls
 admin.autodiscover()
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^admin/', include(massadmin_urls)),
 ]
