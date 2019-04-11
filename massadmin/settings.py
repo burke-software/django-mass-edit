@@ -8,9 +8,10 @@ _default_settings = {
 
 _settings = getattr(settings, 'MASSEDIT', _default_settings)
 
-ADD_ACTION_GLOBALLY = _settings.get(
-    'ADD_ACTION_GLOBALLY', _default_settings['ADD_ACTION_GLOBALLY'])
+
+def _get_value(name):
+    return _settings.get(name, _default_settings[name])
 
 
-SESSION_BASED_URL_THRESHOLD = _settings.get(
-    'SESSION_BASED_URL_THRESHOLD', _default_settings['SESSION_BASED_URL_THRESHOLD'])
+ADD_ACTION_GLOBALLY = _get_value('ADD_ACTION_GLOBALLY')
+SESSION_BASED_URL_THRESHOLD = _get_value('SESSION_BASED_URL_THRESHOLD')
