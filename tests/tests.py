@@ -1,7 +1,7 @@
 from six.moves.urllib import parse
 from django.contrib.auth.models import User
 from django.contrib import admin
-from django.test import TestCase
+from django.test import TestCase, override_settings
 try:
     from django.urls import reverse
 except ImportError:  # Django<2.0
@@ -39,6 +39,13 @@ class AdminViewTest(TestCase):
     def test_massadmin_form_generation_with_many_objects(self):
         models = [CustomAdminModel.objects.create(name="model {}".format(i))
                   for i in range(0, 2000)]
+        response = self.client.get(get_massadmin_url(models, self.client.session))
+        self.assertContains(response, 'Change custom admin model')
+
+    @override_settings(MASSEDIT={'SESSION_BASED_URL_THRESHOLD': 3})
+    def test_massadmin_form_generation_with_many_objects_settings(self):
+        models = [CustomAdminModel.objects.create(name="model {}".format(i))
+                  for i in range(0, 2)]
         response = self.client.get(get_massadmin_url(models, self.client.session))
         self.assertContains(response, 'Change custom admin model')
 
