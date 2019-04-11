@@ -52,6 +52,8 @@ See [Django Docs on the subject](https://docs.djangoproject.com/en/dev/ref/contr
 
 ## Settings
 
+### Enable Mass Edit for specific models
+
 By default, all models registered in the admin will get `Mass Edit` action.
 
 If you wish to disable this, add this to settings file:ž
@@ -69,6 +71,33 @@ from massedit.massedit import MassEditMixin
 class MyModelAdmin(MassEditMixin, admin.ModelAdmin):
     ...
 ``` 
+
+### Session-based URLs
+
+Django-mass-edit will keep IDs for selected objects in URL, e.g:
+```
+/admin/myapp/mymodel-masschange/1,2,3,4,5/
+```
+
+To avoid problems with too long URL when editing large number of objects, 
+the list of objects will be stored in session and the URL will look like this:
+```
+/admin/myapp/mymodel-masschange/session-c81e728d9d4c2f636f067f89cc14862c/
+```
+(same length regardless of the number of selected objects).
+
+The default threshold is 500 characters for the IDs in the URL, not counting 
+anything before or after the the IDs.
+
+This threshold can be changed in settings:
+
+``` python
+MASSEDIT = {
+    'SESSION_BASED_URL_THRESHOLD': 10,
+}
+``` 
+
+To always use the session-based URLs, simply put in value `0`.
 
 
 # Hacking and pull requests
