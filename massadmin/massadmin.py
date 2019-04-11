@@ -1,5 +1,5 @@
 # Updates by David Burke <david@burkesoftware.com>
-# Orginal code is at
+# Original code is at
 # http://algoholic.eu/django-mass-change-admin-site-extension/
 """
 Copyright (c) 2010, Stanislaw Adaszewski
@@ -37,7 +37,7 @@ try:
     from django.urls import reverse
 except ImportError:  # Django<2.0
     from django.core.urlresolvers import reverse
-from django.db import transaction, models
+from django.db import transaction
 try:  # Django>=1.9
     from django.apps import apps
     get_model = apps.get_model
@@ -57,7 +57,6 @@ from django.utils.safestring import mark_safe
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import Http404, HttpResponseRedirect
 from django.utils.html import escape
-from django import template
 from django.shortcuts import render
 from django.forms.formsets import all_valid
 from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
@@ -102,6 +101,7 @@ def mass_change_view(request, app_name, model_name, object_ids, admin_site=None)
     ma = MassAdmin(model, admin_site or admin.site)
     return ma.mass_change_view(request, object_ids)
 mass_change_view = staff_member_required(mass_change_view)
+
 
 def get_formsets(model, request, obj=None):
     try:  # Django>=1.9

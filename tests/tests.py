@@ -97,7 +97,7 @@ class CustomizationTestCase(TestCase):
     """
 
     def test_custom_from(self):
-        """ If form is overrided in ModelAdmin, it should be overrided in
+        """ If form is overridden in ModelAdmin, it should be overridden in
         MassAdmin too.
         """
         ma = MassAdmin(CustomAdminModel, admin.site)

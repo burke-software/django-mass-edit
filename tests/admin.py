@@ -20,8 +20,10 @@ class CustomAdminForm(forms.ModelForm):
         fields = ("name", )
         model = CustomAdminModel
 
+
 class InheritedAdminInline(admin.TabularInline):
     model = InheritedAdminModel
+
 
 class CustomAdmin(admin.ModelAdmin):
     inlines = [InheritedAdminInline, ]
