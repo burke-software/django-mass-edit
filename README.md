@@ -56,7 +56,7 @@ See [Django Docs on the subject](https://docs.djangoproject.com/en/dev/ref/contr
 
 By default, all models registered in the admin will get `Mass Edit` action.
 
-If you wish to disable this, add this to settings file:ž
+If you wish to disable this, add this to settings file:
 
 ``` python
 MASSEDIT = {
