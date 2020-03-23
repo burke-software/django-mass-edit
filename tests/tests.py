@@ -1,7 +1,7 @@
 from six.moves.urllib import parse
 from django.contrib.auth.models import User
 from django.contrib import admin
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, RequestFactory
 try:
     from django.urls import reverse
 except ImportError:  # Django<2.0
@@ -10,6 +10,8 @@ from massadmin.massadmin import MassAdmin, get_mass_change_redirect_url
 
 from .admin import CustomAdminForm, BaseAdmin, InheritedAdmin
 from .models import CustomAdminModel, InheritedAdminModel
+from .site import CustomAdminSite
+from .mocks import MockRenderMassAdmin
 
 
 def get_massadmin_url(objects,session):
@@ -102,6 +104,10 @@ class AdminViewTest(TestCase):
 class CustomizationTestCase(TestCase):
     """ MassAdmin has all customized options from related ModelAdmin
     """
+    def setUp(self):
+        self.user = User.objects.create_superuser(
+            'temporary', 'temporary@gmail.com', 'temporary')
+        self.factory = RequestFactory()
 
     def test_custom_from(self):
         """ If form is overridden in ModelAdmin, it should be overridden in
@@ -117,3 +123,21 @@ class CustomizationTestCase(TestCase):
         ma = MassAdmin(InheritedAdminModel, admin.site)
         self.assertEqual(ma.raw_id_fields, InheritedAdmin.raw_id_fields)
         self.assertEqual(ma.readonly_fields, BaseAdmin.readonly_fields)
+
+    def test_each_context(self):
+        """ If admin site overrides each_context, custom context variables are
+        passed to the render function
+        """
+        custom_site = CustomAdminSite()
+        custom_site.register(CustomAdminModel)
+        mock_ma = MockRenderMassAdmin(CustomAdminModel, custom_site)
+        model = CustomAdminModel.objects.create(name="aaaa")
+
+        request = self.factory.get('/')
+        request.user = self.user
+
+        # Mock overrides render_mass_change_view to return a dict of its
+        # arguments
+        render_args = mock_ma.mass_change_view(request, str(model.pk))
+        self.assertTrue('custom_variable' in render_args['context'])
+        self.assertEqual(render_args['context']['custom_variable'], 'custom_value')
