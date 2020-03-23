@@ -357,6 +357,7 @@ class MassAdmin(admin.ModelAdmin):
         #    media = media + inline_admin_formset.media
 
         context = {
+            **self.admin_site.each_context(request),
             'title': _('Change %s') % force_text(opts.verbose_name),
             'adminform': adminForm,
             'object_id': object_id,
