@@ -21,10 +21,10 @@ def get_massadmin_url(objects,session):
     return get_mass_change_redirect_url(opts,[o.pk for o in objects],session)
 
 
-def get_changelist_url(model):
+def get_changelist_url(model, admin_name='admin'):
     opts = model._meta
-    return reverse("admin:{}_{}_changelist".format(
-        opts.app_label, opts.model_name))
+    return reverse("{}:{}_{}_changelist".format(
+        admin_name, opts.app_label, opts.model_name))
 
 
 class AdminViewTest(TestCase):
@@ -51,17 +51,23 @@ class AdminViewTest(TestCase):
         response = self.client.get(get_massadmin_url(models, self.client.session))
         self.assertContains(response, 'Change custom admin model')
 
-    def test_update(self):
+    def test_update(self, admin_name='admin'):
         models = [CustomAdminModel.objects.create(name="model {}".format(i))
                   for i in range(0, 3)]
 
         response = self.client.post(get_massadmin_url(models, self.client.session),
                                     {"_mass_change": "name",
                                      "name": "new name"})
-        self.assertRedirects(response, get_changelist_url(CustomAdminModel))
+        self.assertRedirects(response, get_changelist_url(CustomAdminModel, admin_name))
         new_names = CustomAdminModel.objects.order_by("pk").values_list("name", flat=True)
         # all models have changed
         self.assertEqual(list(new_names), ["new name"] * 3)
+
+    @override_settings(ROOT_URLCONF='tests.urls_custom_admin')
+    def test_custom_admin_site_update(self):
+        """ We test_update for a custom admin on top of a regular as well
+        """
+        self.test_update('myadmin')
 
     def test_preserve_filters(self):
         """ Preserve filters which was choosed in lookup form
