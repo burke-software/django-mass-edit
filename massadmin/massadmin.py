@@ -149,7 +149,8 @@ class MassAdmin(admin.ModelAdmin):
             'obj': force_text(obj)}
 
         self.message_user(request, msg)
-        redirect_url = reverse('admin:{}_{}_changelist'.format(
+        redirect_url = reverse('{}:{}_{}_changelist'.format(
+            self.admin_site.name,
             self.model._meta.app_label,
             self.model._meta.model_name,
         ))

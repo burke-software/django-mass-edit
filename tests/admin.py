@@ -44,3 +44,6 @@ class InheritedAdmin(BaseAdmin):
 
 
 admin.site.register(InheritedAdminModel, InheritedAdmin)
+
+custom_admin_site = admin.AdminSite(name='myadmin')
+custom_admin_site.register(CustomAdminModel, CustomAdmin)
