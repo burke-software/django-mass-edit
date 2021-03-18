@@ -27,6 +27,7 @@
       {% endif %}
       
       {% for field in line %}
+        {% if not field.field_name in exclude_fields %}
         <tr>
           {% if field.field.name in adminform.readonly_fields %}
             <td>
@@ -35,14 +36,14 @@
             <td>
               {{ field.field.name }} {% trans "is read only." %}
             </td>
-          {% else %}{% if field.field.name in unique_fields %}
+          {% elif field.field.name in unique_fields %}
             <td>
               
             </td>
             <td>
               {{ field.field.name }} {% trans "is unique." %}
             </td>
-          {% elif not field.field.name in exclude_fields %}
+          {% else %}
             <td style="vertical-align: middle;">
               <input type="checkbox" class="update_checkbox" name="_mass_change" value="{{ field.field.name }}"
                 {% if field.field.name in mass_changes_fields %}checked{% endif %} />
@@ -60,8 +61,9 @@
               {% endif %}
               {% if field.field.field.help_text %}<p class="help">{{ field.field.field.help_text|safe }}</p>{% endif %}
             </td>
-          {% endif %}{% endif %}
+          {% endif %}
         </tr>
+        {% endif %}
       {% endfor %}
     {% endfor %}
   </table>
