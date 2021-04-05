@@ -24,7 +24,7 @@ Image was taken using Grappelli
 
 1. `pip install django-mass-edit`
 2. In `settings.py`, add `massadmin` to `INSTALLED_APPS`
-3. Add `path(r'admin/', include('massadmin.urls')),` to `urls.py` before `admin.site.urls` line 
+3. Add `path('admin/', include('massadmin.urls')),` to `urls.py` before `admin.site.urls` line 
 
 ## Optional
 You may exclude some fields like this:
