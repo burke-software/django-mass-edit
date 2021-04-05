@@ -66,7 +66,7 @@ MASSEDIT = {
 
 Then, to add the mass edit action to specific models, use the provided mixin:
 ``` python
-from massedit.massedit import MassEditMixin
+from massadmin.massadmin import MassEditMixin
 
 class MyModelAdmin(MassEditMixin, admin.ModelAdmin):
     ...
