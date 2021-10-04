@@ -175,6 +175,7 @@ class MassAdmin(admin.ModelAdmin):
             'change': change,
             'has_add_permission': self.has_add_permission(request),
             'has_change_permission': self.has_change_permission(request, obj),
+            'has_view_permission': self.has_view_permission(request, obj),
             'has_delete_permission': self.has_delete_permission(request, obj),
             'has_file_field': True,
             'has_absolute_url': hasattr(self.model, 'get_absolute_url'),
