@@ -114,6 +114,8 @@ def get_formsets(model, request, obj=None):
 
 class MassAdmin(admin.ModelAdmin):
 
+    mass_change_form_template = None
+
     def __init__(self, model, admin_site):
         try:
             self.admin_obj = admin_site._registry[model]
@@ -190,7 +192,7 @@ class MassAdmin(admin.ModelAdmin):
         request.current_app = self.admin_site.name
         return render(
             request,
-            self.change_form_template or [
+            self.mass_change_form_template or [
                 "admin/%s/%s/mass_change_form.html" %
                 (app_label,
                  opts.object_name.lower()),
