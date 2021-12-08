@@ -2,13 +2,13 @@ from setuptools import setup, find_packages
 
 setup(
     name = "django-mass-edit",
-    version="3.3.0",
+    version="3.3.1uh",
     author = "David Burke",
     author_email = "david@burkesoftware.com",
     description = ("Make bulk changes in the Django admin interface"),
     license = "BSD",
     keywords = "django admin",
-    url = "https://github.com/burke-software/django-mass-edit",
+    url = "https://github.com/unhaggle/django-mass-edit",
     packages=find_packages(),
     include_package_data=True,
     classifiers=[
@@ -16,7 +16,6 @@ setup(
         'Environment :: Web Environment',
         'Framework :: Django',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.6',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',

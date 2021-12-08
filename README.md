@@ -1,5 +1,12 @@
-[![Build Status](https://travis-ci.org/burke-software/django-mass-edit.svg?branch=master)](https://travis-ci.org/burke-software/django-mass-edit)
-[![Coverage Status](https://coveralls.io/repos/burke-software/django-mass-edit/badge.svg?branch=master&service=github)](https://coveralls.io/github/burke-software/django-mass-edit?branch=master)
+# Django Mass Edit
+
+**UH Build Status**
+
+[![UH Build Status](https://app.travis-ci.com/unhaggle/django-mass-edit.svg?branch=master)](https://app.travis-ci.com/github/unhaggle/django-mass-edit)
+
+**Original Author's Build Status**
+
+[![Original Author's Build Status](https://travis-ci.org/burke-software/django-mass-edit.svg?branch=master)](https://travis-ci.org/burke-software/django-mass-edit)
 
 From Stanislaw Adaszewski's [blog](http://algoholic.eu/django-mass-change-admin-site-extension/ ). 
 I've fixed bugs and made changes to make it a production friendly drop-in Django app for bulk changes in Django's 
@@ -10,17 +17,17 @@ Image was taken using Grappelli
 
 ![Alt text](https://raw.github.com/burke-software/django-mass-edit/master/doc/screenshot9.png)
 
-# Features
+## Features
 - Drop in app, works with all models in admin
 - Doesn't allow users to edit unique and read only fields
 - Attempts to detect and show users errors
 - Database transactions ensure either all or no objects are changed
 
-# Not implemented
+## Not implemented
 - No support for inlines. Original had this. I commented it out because I felt it was very buggy.
 - Validation errors do not show up by the field they should
 
-# Installation
+## Installation
 
 1. `pip install django-mass-edit`
 2. In `settings.py`, add `massadmin` to `INSTALLED_APPS`
@@ -58,19 +65,19 @@ By default, all models registered in the admin will get `Mass Edit` action.
 
 If you wish to disable this, add this to settings file:
 
-``` python
+```python
 MASSEDIT = {
     'ADD_ACTION_GLOBALLY': False,
 }
 ``` 
 
 Then, to add the mass edit action to specific models, use the provided mixin:
-``` python
+```python
 from massadmin.massadmin import MassEditMixin
 
 class MyModelAdmin(MassEditMixin, admin.ModelAdmin):
     ...
-``` 
+```
 
 ### Session-based URLs
 
@@ -95,7 +102,7 @@ This threshold can be changed in settings:
 MASSEDIT = {
     'SESSION_BASED_URL_THRESHOLD': 10,
 }
-``` 
+```
 
 To always use the session-based URLs, simply put in value `0`.
 
@@ -107,3 +114,8 @@ When you make a pull request - please include a unit test.
 If you want to take on improving the project let me know by opening an issue.
 
 New maintainers welcome. I (bufke) will only be providing minimal support to keep the project running on modern versions of Django. Open an issue if you are interested.
+
+## UH Maintainers
+
+* [Danial Malik](https://github.com/danialmalik)
+* [Omar Espana](https://github.com/Chamartin3)
