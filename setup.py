@@ -1,14 +1,14 @@
 from setuptools import setup, find_packages
 
 setup(
-    name = "django-mass-edit",
+    name="django-mass-edit",
     version="3.3.0",
-    author = "David Burke",
-    author_email = "david@burkesoftware.com",
-    description = ("Make bulk changes in the Django admin interface"),
-    license = "BSD",
-    keywords = "django admin",
-    url = "https://github.com/burke-software/django-mass-edit",
+    author="David Burke",
+    author_email="david@burkesoftware.com",
+    description=("Make bulk changes in the Django admin interface"),
+    license="BSD",
+    keywords="django admin",
+    url="https://github.com/burke-software/django-mass-edit",
     packages=find_packages(),
     include_package_data=True,
     classifiers=[

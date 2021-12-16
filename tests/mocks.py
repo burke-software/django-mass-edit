@@ -1,5 +1,6 @@
 from massadmin.massadmin import MassAdmin
 
+
 class MockRenderMassAdmin(MassAdmin):
     def render_mass_change_form(
             self,

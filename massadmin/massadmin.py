@@ -51,7 +51,7 @@ from django.contrib.admin import helpers
 from django.utils.translation import gettext_lazy as _
 try:
     from django.utils.encoding import force_str
-except:  # 1.4 compat
+except ImportError:  # 1.4 compat
     from django.utils.encoding import force_unicode as force_str
 from django.utils.safestring import mark_safe
 from django.contrib.admin.views.decorators import staff_member_required
@@ -100,12 +100,14 @@ def mass_change_view(request, app_name, model_name, object_ids, admin_site=None)
     model = get_model(app_name, model_name)
     ma = MassAdmin(model, admin_site or admin.site)
     return ma.mass_change_view(request, object_ids)
+
+
 mass_change_view = staff_member_required(mass_change_view)
 
 
 def get_formsets(model, request, obj=None):
     try:  # Django>=1.9
-        return [f for f,_ in model.get_formsets_with_inlines(request, obj)]
+        return [f for f, _ in model.get_formsets_with_inlines(request, obj)]
     except AttributeError:
         return model.get_formsets(request, obj)
 
@@ -133,7 +135,7 @@ class MassAdmin(admin.ModelAdmin):
             if cl is admin.ModelAdmin:
                 break
             for k, v in cl.__dict__.items():
-                if not k in items:
+                if k not in items:
                     items[k] = v
         return items
 
@@ -316,7 +318,7 @@ class MassAdmin(admin.ModelAdmin):
                         # Raise error for rollback transaction in atomic block
                         raise ValidationError("Not all forms is correct")
 
-            except:
+            except Exception:
                 general_error = sys.exc_info()[1]
 
         form = ModelForm(instance=obj)
@@ -338,20 +340,17 @@ class MassAdmin(admin.ModelAdmin):
 
         # We don't want the user trying to mass change unique fields!
         unique_fields = []
-        try:  # Django >= 1.9
-            fields = model._meta.get_fields()
-        except:
-            fields = model._meta.get_all_field_names()
+        fields = model._meta.get_fields()
         for field_name in fields:
             try:
                 field = model._meta.get_field(field_name)
                 if field.unique:
                     unique_fields.append(field_name)
-            except:
+            except Exception:
                 pass
 
         # Buggy! Use at your own risk
-        #inline_admin_formsets = []
+        # inline_admin_formsets = []
         # for inline, formset in zip(self.inline_instances, formsets):
         #    fieldsets = list(inline.get_fieldsets(request, obj))
         #    inline_admin_formset = helpers.InlineAdminFormSet(inline, formset, fieldsets)
@@ -367,7 +366,7 @@ class MassAdmin(admin.ModelAdmin):
             'exclude_fields': exclude_fields,
             'is_popup': '_popup' in request.GET or '_popup' in request.POST,
             'media': mark_safe(media),
-            #'inline_admin_formsets': inline_admin_formsets,
+            # 'inline_admin_formsets': inline_admin_formsets,
             'errors': errors_list,
             'general_error': general_error,
             'app_label': opts.app_label,

@@ -14,11 +14,11 @@ from .site import CustomAdminSite
 from .mocks import MockRenderMassAdmin
 
 
-def get_massadmin_url(objects,session):
+def get_massadmin_url(objects, session):
     if not hasattr(objects, "__iter__"):
         objects = [objects]
     opts = objects[0]._meta
-    return get_mass_change_redirect_url(opts,[o.pk for o in objects],session)
+    return get_mass_change_redirect_url(opts, [o.pk for o in objects], session)
 
 
 def get_changelist_url(model, admin_name='admin'):
