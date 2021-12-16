@@ -48,11 +48,11 @@ try:
 except ImportError:
     from django.contrib.admin.util import unquote
 from django.contrib.admin import helpers
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 try:
-    from django.utils.encoding import force_text
+    from django.utils.encoding import force_str
 except:  # 1.4 compat
-    from django.utils.encoding import force_unicode as force_text
+    from django.utils.encoding import force_unicode as force_str
 from django.utils.safestring import mark_safe
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import Http404, HttpResponseRedirect
@@ -144,9 +144,9 @@ class MassAdmin(admin.ModelAdmin):
         opts = obj._meta
 
         msg = _('Selected %(name)s were changed successfully.') % {
-            'name': force_text(
+            'name': force_str(
                 opts.verbose_name_plural),
-            'obj': force_text(obj)}
+            'obj': force_str(obj)}
 
         self.message_user(request, msg)
         redirect_url = reverse('{}:{}_{}_changelist'.format(
@@ -230,7 +230,7 @@ class MassAdmin(admin.ModelAdmin):
         if obj is None:
             raise Http404(
                 _('%(name)s object with primary key %(key)r does not exist.') % {
-                    'name': force_text(
+                    'name': force_str(
                         opts.verbose_name),
                     'key': escape(object_id)})
 
@@ -359,7 +359,7 @@ class MassAdmin(admin.ModelAdmin):
         #    media = media + inline_admin_formset.media
 
         context = {
-            'title': _('Change %s') % force_text(opts.verbose_name),
+            'title': _('Change %s') % force_str(opts.verbose_name),
             'adminform': adminForm,
             'object_id': object_id,
             'original': obj,
