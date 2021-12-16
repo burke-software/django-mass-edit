@@ -29,6 +29,7 @@ from django import template
 
 register = template.Library()
 
+
 @register.filter('truncchar')
 # truncate after a certain number of characters
 def truncchar(value, arg):
