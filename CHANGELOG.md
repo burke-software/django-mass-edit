@@ -1,6 +1,6 @@
 # Changelog
 
-3.4.0 (unreleased)
+3.4.0 (17-12-2021)
 ------------------
 
 Supports Django 2.1 and newer
