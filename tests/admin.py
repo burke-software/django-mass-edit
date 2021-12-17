@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import CustomAdminModel, InheritedAdminModel
+from .models import CustomAdminModel, CustomAdminModel2, InheritedAdminModel
 
 
 class CustomAdminForm(forms.ModelForm):
@@ -31,7 +31,14 @@ class CustomAdmin(admin.ModelAdmin):
     form = CustomAdminForm
 
 
+class CustomAdminWithCustomTemplate(admin.ModelAdmin):
+    model = CustomAdminModel2
+    form = CustomAdminForm
+    change_form_template = "admin/change_form_template.html"
+
+
 admin.site.register(CustomAdminModel, CustomAdmin)
+admin.site.register(CustomAdminModel2, CustomAdminWithCustomTemplate)
 
 
 class BaseAdmin(admin.ModelAdmin):

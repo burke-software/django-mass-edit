@@ -9,7 +9,7 @@ except ImportError:  # Django<2.0
 from massadmin.massadmin import MassAdmin, get_mass_change_redirect_url
 
 from .admin import CustomAdminForm, BaseAdmin, InheritedAdmin
-from .models import CustomAdminModel, InheritedAdminModel
+from .models import CustomAdminModel, CustomAdminModel2, InheritedAdminModel
 from .site import CustomAdminSite
 from .mocks import MockRenderMassAdmin
 
@@ -37,6 +37,14 @@ class AdminViewTest(TestCase):
     def test_massadmin_form_generation(self):
         response = self.client.get(get_massadmin_url(self.user, self.client.session))
         self.assertContains(response, 'First name')
+
+    def test_massadmin_form_generation_with_custom_template(self):
+        models = [
+            CustomAdminModel2.objects.create(name="model {}".format(i))
+            for i in range(0, 3)
+        ]
+        response = self.client.get(get_massadmin_url(models, self.client.session))
+        self.assertContains(response, 'model 0')
 
     def test_massadmin_form_generation_with_many_objects(self):
         models = [CustomAdminModel.objects.create(name="model {}".format(i))
