@@ -9,7 +9,12 @@ except ImportError:  # Django<2.0
 from massadmin.massadmin import MassAdmin, get_mass_change_redirect_url
 
 from .admin import CustomAdminForm, BaseAdmin, InheritedAdmin
-from .models import CustomAdminModel, CustomAdminModel2, InheritedAdminModel
+from .models import (
+    CustomAdminModel,
+    CustomAdminModel2,
+    InheritedAdminModel,
+    FieldsetsAdminModel,
+)
 from .site import CustomAdminSite
 from .mocks import MockRenderMassAdmin
 
@@ -113,6 +118,31 @@ class AdminViewTest(TestCase):
         new_names = CustomAdminModel.objects.order_by("pk").values_list("name", flat=True)
         # all models stay the same
         self.assertEqual(list(new_names), [m.name for m in models])
+
+    def test_get_fieldsets(self):
+        """ Use the admin_obj's get_fieldsets method if it is defined
+        """
+        names = [
+            {
+                "first_name": "first {}".format(i),
+                "middle_name": "middle {}".format(i),
+                "last_name": "last {}".format(i)
+            }
+            for i in range(3)
+        ]
+        models = [FieldsetsAdminModel.objects.create(**n) for n in names]
+        response = self.client.get(get_massadmin_url(models, self.client.session))
+        self.assertEqual(response.status_code, 200)
+
+        expected_fieldset_group_1 = """
+        <h2 class="grp-collapse-handler">First part of name Mass Edit</h2>
+        """
+        expected_fieldset_group_2 = """
+        <h2 class="grp-collapse-handler">Second part of name Mass Edit</h2>
+        """
+
+        self.assertContains(response, expected_fieldset_group_1, html=True)
+        self.assertContains(response, expected_fieldset_group_2, html=True)
 
 
 class CustomizationTestCase(TestCase):

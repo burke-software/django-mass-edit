@@ -2,7 +2,12 @@
 from django.contrib import admin
 from django import forms
 
-from .models import CustomAdminModel, CustomAdminModel2, InheritedAdminModel
+from .models import (
+    CustomAdminModel,
+    CustomAdminModel2,
+    InheritedAdminModel,
+    FieldsetsAdminModel,
+)
 
 
 class CustomAdminForm(forms.ModelForm):
@@ -37,8 +42,19 @@ class CustomAdminWithCustomTemplate(admin.ModelAdmin):
     change_form_template = "admin/change_form_template.html"
 
 
+class CustomAdminWithGetFieldsets(admin.ModelAdmin):
+    model = FieldsetsAdminModel
+
+    def get_fieldsets(self, request, obj=None):
+        return (
+            ("First part of name", {"fields": ("first_name",)}),
+            ("Second part of name", {"fields": ("middle_name", "last_name")}),
+        )
+
+
 admin.site.register(CustomAdminModel, CustomAdmin)
 admin.site.register(CustomAdminModel2, CustomAdminWithCustomTemplate)
+admin.site.register(FieldsetsAdminModel, CustomAdminWithGetFieldsets)
 
 
 class BaseAdmin(admin.ModelAdmin):
