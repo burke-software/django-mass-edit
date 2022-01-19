@@ -9,16 +9,21 @@ except ImportError:  # Django<2.0
 from massadmin.massadmin import MassAdmin, get_mass_change_redirect_url
 
 from .admin import CustomAdminForm, BaseAdmin, InheritedAdmin
-from .models import CustomAdminModel, InheritedAdminModel
+from .models import (
+    CustomAdminModel,
+    CustomAdminModel2,
+    InheritedAdminModel,
+    FieldsetsAdminModel,
+)
 from .site import CustomAdminSite
 from .mocks import MockRenderMassAdmin
 
 
-def get_massadmin_url(objects,session):
+def get_massadmin_url(objects, session):
     if not hasattr(objects, "__iter__"):
         objects = [objects]
     opts = objects[0]._meta
-    return get_mass_change_redirect_url(opts,[o.pk for o in objects],session)
+    return get_mass_change_redirect_url(opts, [o.pk for o in objects], session)
 
 
 def get_changelist_url(model, admin_name='admin'):
@@ -37,6 +42,14 @@ class AdminViewTest(TestCase):
     def test_massadmin_form_generation(self):
         response = self.client.get(get_massadmin_url(self.user, self.client.session))
         self.assertContains(response, 'First name')
+
+    def test_massadmin_form_generation_with_custom_template(self):
+        models = [
+            CustomAdminModel2.objects.create(name="model {}".format(i))
+            for i in range(0, 3)
+        ]
+        response = self.client.get(get_massadmin_url(models, self.client.session))
+        self.assertContains(response, 'model 0')
 
     def test_massadmin_form_generation_with_many_objects(self):
         models = [CustomAdminModel.objects.create(name="model {}".format(i))
@@ -105,6 +118,31 @@ class AdminViewTest(TestCase):
         new_names = CustomAdminModel.objects.order_by("pk").values_list("name", flat=True)
         # all models stay the same
         self.assertEqual(list(new_names), [m.name for m in models])
+
+    def test_get_fieldsets(self):
+        """ Use the admin_obj's get_fieldsets method if it is defined
+        """
+        names = [
+            {
+                "first_name": "first {}".format(i),
+                "middle_name": "middle {}".format(i),
+                "last_name": "last {}".format(i)
+            }
+            for i in range(3)
+        ]
+        models = [FieldsetsAdminModel.objects.create(**n) for n in names]
+        response = self.client.get(get_massadmin_url(models, self.client.session))
+        self.assertEqual(response.status_code, 200)
+
+        expected_fieldset_group_1 = """
+        <h2 class="grp-collapse-handler">First part of name Mass Edit</h2>
+        """
+        expected_fieldset_group_2 = """
+        <h2 class="grp-collapse-handler">Second part of name Mass Edit</h2>
+        """
+
+        self.assertContains(response, expected_fieldset_group_1, html=True)
+        self.assertContains(response, expected_fieldset_group_2, html=True)
 
 
 class CustomizationTestCase(TestCase):

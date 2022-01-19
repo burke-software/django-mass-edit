@@ -26,4 +26,3 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 '''
 
 default_app_config = 'massadmin.apps.MassAdminConfig'
-
