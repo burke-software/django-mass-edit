@@ -256,6 +256,12 @@ class MassAdmin(admin.ModelAdmin):
                             request.FILES,
                             instance=obj)
 
+                        # refresh InMemoryUploadedFile object.
+                        # It should not cause memory leaks as it
+                        # only fseeks to the beggining of the media file.
+                        for in_memory_file in request.FILES.values():
+                            in_memory_file.open()
+
                         exclude = []
                         for fieldname, field in list(form.fields.items()):
                             if fieldname not in mass_changes_fields:
