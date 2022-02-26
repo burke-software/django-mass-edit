@@ -47,7 +47,7 @@ See [Django Docs on the subject](https://docs.djangoproject.com/en/dev/ref/contr
         admin_site = MyCustomAdminSite(name='custom_admin')
         admin_site.add_action(mass_change_selected)
 
-        url(r'^admin/', include(massadmin.urls), kwargs={'admin_site': admin_site}),
+        path('admin/', include(massadmin.urls), kwargs={'admin_site': admin_site}),
         ```
 
 ## Settings
