@@ -1,0 +1,40 @@
+{% load i18n admin_urls admin_modify %}
+
+{% if add_inline %}
+  <table>
+    <tr>
+      <td>
+        <td style="vertical-align: middle;">
+          <input 
+          type="checkbox"
+          class="update_checkbox"
+          name="_mass_add_{{ inline_admin_formset.opts.verbose_name|slugify }}"
+          value="{{ field.field.name }}"
+          {% if field.field.name in mass_added_inlines %}checked{% endif %} />
+        </td>
+      </td>
+      <td>
+        {% include inline_admin_formset.opts.template %}
+      </td>
+
+    </tr>
+  </table>
+{% endif %}
+
+{% if change_inline %}
+  <div class="js-inline-admin-formset inline-group"
+  id="{{ inline_admin_formset.formset.prefix }}-group">
+  <fieldset class="module {{ inline_admin_formset.classes }}">
+    <h2>{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}</h2>
+    {{ inline_admin_formset.formset.management_form }}
+    {{ inline_admin_formset.formset.non_form_errors }}
+    {% for inline_admin_form in inline_admin_formset %}
+      {% if inline_admin_form.form.non_field_errors %}{{ inline_admin_form.form.non_field_errors }}{% endif %}
+      {% for fieldset in inline_admin_form %}
+        {% include "admin/includes/mass_fieldset.html" with adminform=inline_admin_formset.opts unique_fields=inline_admin_formset.formset.unique_fields exclude_fields=inline_admin_formset.exclude_fields mass_changes_fields=inline_admin_formset.mass_changes_fields is_inline=True %}
+      {% endfor %}
+    {% endfor %}
+    </div>
+  </fieldset>
+  </div>
+{% endif %}

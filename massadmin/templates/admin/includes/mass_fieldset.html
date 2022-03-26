@@ -3,7 +3,6 @@
 <fieldset class="grp-module module {{ fieldset.classes }}">
   {% if fieldset.name %}<h2 class="grp-collapse-handler">{{ fieldset.name }} Mass Edit</h2>{% endif %}
   {% if fieldset.description %}<div class="grp-row row"><p class="grp-description">{{ fieldset.description|safe }}</p></div>{% endif %}
-  
   {% if general_error %}
     <div class="grp-errors errornote"> {{ general_error}} </div>
   {% endif %}
@@ -25,10 +24,10 @@
           </td>
         </tr>
       {% endif %}
-      
       {% for field in line %}
         <tr>
           {% if field.field.name in adminform.readonly_fields %}
+          {{ adminform.readonly_fields }}
             <td>
               
             </td>
@@ -44,8 +43,12 @@
             </td>
           {% elif not field.field.name in exclude_fields %}
             <td style="vertical-align: middle;">
-              <input type="checkbox" class="update_checkbox" name="_mass_change" value="{{ field.field.name }}"
-                {% if field.field.name in mass_changes_fields %}checked{% endif %} />
+              <input 
+              type="checkbox"
+              class="update_checkbox"
+              name="_mass_change{% if is_inline %}_{{ adminform.verbose_name|slugify }}{% endif %}"
+              value="{{ field.field.name }}"
+              {% if field.field.name in mass_changes_fields %}checked{% endif %} />
             </td>
             <td class="form-row field-{{ field.field.name }}">
               {% if field.is_checkbox %}

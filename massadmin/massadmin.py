@@ -62,6 +62,7 @@ from django.forms.formsets import all_valid
 from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
 
 from . import settings
+from . import helpers as mass_helpers
 
 
 def mass_change_selected(modeladmin, request, queryset):
@@ -201,6 +202,28 @@ class MassAdmin(admin.ModelAdmin):
                 "admin/mass_change_form.html"],
             context)
 
+    def get_inline_formsets(self, request, formsets, inline_instances, obj=None):
+        inline_admin_formsets = super().get_inline_formsets(request, formsets, inline_instances, obj)
+
+        mass_inline_admin_formsets = []
+        for obj in inline_admin_formsets:
+            mass_inline_admin_formset = mass_helpers.MassInlineAdminFormset(
+                obj.opts, obj.formset, obj.fieldsets,
+                obj.prepopulated_fields, obj.readonly_fields, obj.model_admin,
+                obj.has_add_permission, obj.has_change_permission,
+                obj.has_delete_permission, obj.has_view_permission,
+            )
+            mass_inline_admin_formsets.append(mass_inline_admin_formset)
+        
+        return mass_inline_admin_formsets
+
+    def mass_add_inlines_view(
+        self,
+        request,
+        comma_separeted_object_ids,
+        extra_context=None,
+    ):
+        
     def mass_change_view(
             self,
             request,
@@ -353,14 +376,20 @@ class MassAdmin(admin.ModelAdmin):
                     unique_fields.append(field_name)
             except Exception:
                 pass
+        
+        formsets, inline_instances = self._create_formsets(
+            # Empty inlines
+            request, obj, change=False
+        )
 
-        # Buggy! Use at your own risk
-        # inline_admin_formsets = []
-        # for inline, formset in zip(self.inline_instances, formsets):
-        #    fieldsets = list(inline.get_fieldsets(request, obj))
-        #    inline_admin_formset = helpers.InlineAdminFormSet(inline, formset, fieldsets)
-        #    inline_admin_formsets.append(inline_admin_formset)
-        #    media = media + inline_admin_formset.media
+        inline_admin_formsets = self.get_inline_formsets(
+            request, formsets, inline_instances, obj
+        )
+        for inline_admin_formset in inline_admin_formsets:
+            media = media + inline_admin_formset.media
+        
+        # modify in post
+        inline_mass_changes_fields = []
 
         context = {
             'title': _('Change %s') % force_str(opts.verbose_name),
@@ -371,12 +400,13 @@ class MassAdmin(admin.ModelAdmin):
             'exclude_fields': exclude_fields,
             'is_popup': '_popup' in request.GET or '_popup' in request.POST,
             'media': mark_safe(media),
-            # 'inline_admin_formsets': inline_admin_formsets,
+            'inline_admin_formsets': inline_admin_formsets,
             'errors': errors_list,
             'general_error': general_error,
             'app_label': opts.app_label,
             'object_ids': comma_separated_object_ids,
             'mass_changes_fields': mass_changes_fields,
+            "change_inline": True,
         }
         context.update(self.admin_site.each_context(request))
         context.update(extra_context or {})

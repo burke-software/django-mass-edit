@@ -1,23 +1,10 @@
 {% extends "admin/change_form.html" %}
 {% load i18n admin_modify %}
 {% load truncchar %}
+{% load static %}
 
 {% block extrahead %}{{ block.super }}
-<script type="text/javascript">
-  function verify_checked() {
-    checkboxes = document.querySelectorAll("input.update_checkbox");
-    some_checked = false;
-    for (var i = 0, len = checkboxes.length; i < len; i++) {
-      if ( checkboxes[i].checked ) {
-        some_checked = true;
-      }
-    }
-    if ( ! some_checked ) {
-    	some_checked = confirm('You have not checked off any fields to update. Are you sure you wish to continue?');
-    }
-    return some_checked;
-  }
-</script>
+<script src="{% static 'js/verify_checked.js' %}"></script>
 {% endblock %}
 
 {% block breadcrumbs %}{% if not is_popup %}
@@ -46,24 +33,21 @@
 {% endif %}
 
 {% for fieldset in adminform %}
-     {% include "admin/includes/mass_fieldset.html" %}
+    {% include "admin/includes/mass_fieldset.html" %}
 {% endfor %}
 
 {% block after_field_sets %}{% endblock %}
 
-<!-- Too unstable. Enable at your own risk
 {% for inline_admin_formset in inline_admin_formsets %}
-    <input type="checkbox" name="_mass_change_{{ inline_admin_formset.formset.prefix }}"> {% trans "Mass Change" %}:
-    {% include inline_admin_formset.opts.template %}
+    {% include "admin/includes/mass_inline.html" %}
 {% endfor %}
--->
 
 {% block after_related_objects %}{% endblock %}
 
 {% include "admin/save_only_submit_line.html" %}
 
 {% if adminform and add %}
-   <script type="text/javascript">document.getElementById("{{ adminform.first_field.auto_id }}").focus();</script>
+    <script type="text/javascript">document.getElementById("{{ adminform.first_field.auto_id }}").focus();</script>
 {% endif %}
 
 {# JavaScript for prepopulated fields #}
