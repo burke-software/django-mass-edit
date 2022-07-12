@@ -387,7 +387,16 @@ class MassAdmin(admin.ModelAdmin):
             obj=obj)
 
 
-class MassEditMixin:
-    actions = (
-        mass_change_selected,
-    )
+class MassEditMixin(object):
+
+    def get_actions(self, request):
+        actions = super(MassEditMixin, self).get_actions(request)
+
+        if settings.MASS_USERS_GROUP and settings.MASS_USERS_GROUP in [g.name for g in request.user.groups.all()]:
+            actions[mass_change_selected.__name__] = (
+                mass_change_selected,
+                mass_change_selected.__name__,
+                mass_change_selected.short_description
+            )
+
+        return actions
