@@ -45,8 +45,16 @@ class CustomAdminWithCustomTemplate(admin.ModelAdmin):
     change_form_template = "admin/change_form_template.html"
 
 
-class CustomAdminWithGetFieldsets(admin.ModelAdmin):
+class CustomAdminWithGetFieldsetsAncestor(admin.ModelAdmin):
+    """
+    Ancestor that defines fieldsets
+    which should not be used by the mass_change_view()
+    """
     model = FieldsetsAdminModel
+    fieldsets = ()
+
+
+class CustomAdminWithGetFieldsets(CustomAdminWithGetFieldsetsAncestor):
 
     def get_fieldsets(self, request, obj=None):
         return (

@@ -238,7 +238,7 @@ class MassAdmin(admin.ModelAdmin):
                         opts.verbose_name),
                     'key': escape(object_id)})
 
-        ModelForm = self.get_form(request, obj)
+        ModelForm = self.admin_obj.get_form(request, obj)
         formsets = []
         errors, errors_list = None, None
         mass_changes_fields = request.POST.getlist("_mass_change")
