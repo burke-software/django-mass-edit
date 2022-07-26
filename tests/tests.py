@@ -144,6 +144,22 @@ class AdminViewTest(TestCase):
         self.assertContains(response, expected_fieldset_group_1, html=True)
         self.assertContains(response, expected_fieldset_group_2, html=True)
 
+    def test_excluded_queryset(self):
+        """ Ensure, that the user with name dont_show is excluded from the view
+        """
+        models = [
+            CustomAdminModel.objects.create(name="dont_show"),
+        ]
+        response = self.client.get(get_massadmin_url(models, self.client.session))
+        self.assertEqual(response.status_code, 404)
+
+        self.assertContains(
+            response,
+            "<p>The requested resource was not found on this server.</p>",
+            html=True,
+            status_code=404,
+        )
+
 
 class CustomizationTestCase(TestCase):
     """ MassAdmin has all customized options from related ModelAdmin
