@@ -35,6 +35,9 @@ class CustomAdmin(admin.ModelAdmin):
     model = CustomAdminModel
     form = CustomAdminForm
 
+    def get_queryset(self, request):
+        return CustomAdminModel.objects.exclude(name__contains="dont_show")
+
 
 class CustomAdminWithCustomTemplate(admin.ModelAdmin):
     model = CustomAdminModel2
