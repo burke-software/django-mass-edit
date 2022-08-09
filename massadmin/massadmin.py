@@ -55,11 +55,13 @@ except ImportError:  # 1.4 compat
     from django.utils.encoding import force_unicode as force_str
 from django.utils.safestring import mark_safe
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import permission_required
 from django.http import Http404, HttpResponseRedirect
 from django.utils.html import escape
 from django.shortcuts import render
 from django.forms.formsets import all_valid
 from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
+from django.contrib import messages
 
 from . import settings
 
@@ -94,12 +96,21 @@ def get_mass_change_redirect_url(model_meta, pk_list, session):
 mass_change_selected.short_description = _('Mass Edit')
 
 
+def get_changelist_url(model, admin_name='admin'):
+    opts = model._meta
+    return reverse("{}:{}_{}_changelist".format(
+        admin_name, opts.app_label, opts.model_name))
+
+
 def mass_change_view(request, app_name, model_name, object_ids, admin_site=None):
     if object_ids.startswith("session-"):
         object_ids = request.session.get(object_ids)
     model = get_model(app_name, model_name)
-    ma = MassAdmin(model, admin_site or admin.site)
-    return ma.mass_change_view(request, object_ids)
+    if request.user.has_perm('massadmin.can_mass_edit'):
+        ma = MassAdmin(model, admin_site or admin.site)
+        return ma.mass_change_view(request, object_ids)
+    else:
+        return HttpResponseRedirect(get_changelist_url(model))
 
 
 mass_change_view = staff_member_required(mass_change_view)
@@ -354,14 +365,6 @@ class MassAdmin(admin.ModelAdmin):
             except Exception:
                 pass
 
-        # Buggy! Use at your own risk
-        # inline_admin_formsets = []
-        # for inline, formset in zip(self.inline_instances, formsets):
-        #    fieldsets = list(inline.get_fieldsets(request, obj))
-        #    inline_admin_formset = helpers.InlineAdminFormSet(inline, formset, fieldsets)
-        #    inline_admin_formsets.append(inline_admin_formset)
-        #    media = media + inline_admin_formset.media
-
         context = {
             'title': _('Change %s') % force_str(opts.verbose_name),
             'adminform': adminForm,
@@ -390,9 +393,9 @@ class MassAdmin(admin.ModelAdmin):
 class MassEditMixin(object):
 
     def get_actions(self, request):
-        actions = super(MassEditMixin, self).get_actions(request)
+        actions = super().get_actions(request)
 
-        if settings.MASS_USERS_GROUP and settings.MASS_USERS_GROUP in [g.name for g in request.user.groups.all()]:
+        if request.user.has_perm("massadmin.can_mass_edit"):
             actions[mass_change_selected.__name__] = (
                 mass_change_selected,
                 mass_change_selected.__name__,
