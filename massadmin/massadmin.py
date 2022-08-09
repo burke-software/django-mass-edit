@@ -217,7 +217,7 @@ class MassAdmin(admin.ModelAdmin):
         queryset = getattr(
             self.admin_obj,
             "massadmin_queryset",
-            self.get_queryset)(request)
+            self.admin_obj.get_queryset)(request)
 
         object_ids = comma_separated_object_ids.split(',')
         object_id = object_ids[0]
@@ -238,7 +238,7 @@ class MassAdmin(admin.ModelAdmin):
                         opts.verbose_name),
                     'key': escape(object_id)})
 
-        ModelForm = self.get_form(request, obj)
+        ModelForm = self.admin_obj.get_form(request, obj)
         formsets = []
         errors, errors_list = None, None
         mass_changes_fields = request.POST.getlist("_mass_change")
