@@ -55,13 +55,11 @@ except ImportError:  # 1.4 compat
     from django.utils.encoding import force_unicode as force_str
 from django.utils.safestring import mark_safe
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.decorators import permission_required
 from django.http import Http404, HttpResponseRedirect
 from django.utils.html import escape
 from django.shortcuts import render
 from django.forms.formsets import all_valid
 from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
-from django.contrib import messages
 
 from . import settings
 
