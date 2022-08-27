@@ -64,6 +64,8 @@ MASSEDIT = {
 }
 ``` 
 
+Keep in mind that, disabling the option, a massedit permission has to be specifically assigned to the authorized users as explained below.
+
 Then, to add the mass edit action to specific models, use the provided mixin:
 ``` python
 from massadmin.massadmin import MassEditMixin
@@ -72,18 +74,11 @@ class MyModelAdmin(MassEditMixin, admin.ModelAdmin):
     ...
 ``` 
 
-### Restrict Mass actions enabled users
+### Restrict Mass actions to enabled users
 
-You can restrict Mass edit action to those users belonging to a specified group name.
-
-``` python
-MASSEDIT = {
-    'ADD_ACTION_GLOBALLY': False,
-    'MASS_USERS_GROUP': 'somegroup'
-}
-``` 
-
-Note that user user restriction has effect only in conjunction with 'ADD_ACTION_GLOBALLY' variable set to false.
+Mass edit action are restricted by default to those users that have the apposite 'Can perform mass editing' permission.
+This permission can be assigned as other django permissions assigning directy to the user the `massadmin | rights support | Can perform mass editing` or assigning it to a group and then assigning the group to all the desired users.
+Note that the user restriction has effect only in conjunction with 'ADD_ACTION_GLOBALLY' variable set to false.
 
 ### Session-based URLs
 
