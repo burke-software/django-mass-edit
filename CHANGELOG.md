@@ -1,5 +1,13 @@
 # Changelog
 
+3.5.0 (22-08-2023)
+------------------
+
+* Updates for Django up to 4.2
+* ``mass_change_view()`` should also call ``get_queryset()`` from ``admin_obj`` (#111)
+* ``mass_edit_view()`` should call ``get_form()`` on ``admin_obj`` (#112)
+* Use the admin obj's hook methods (``get_fieldsets``, etc) instead of the MassAdmin's own (#103)
+
 3.4.1 (17-12-2021)
 ------------------
 
