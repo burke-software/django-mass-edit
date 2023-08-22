@@ -1,6 +1,6 @@
 # Changelog
 
-3.5.0 (22-08-2023)
+## 3.5.0 (unreleased)
 ------------------
 
 * Updates for Django up to 4.2
