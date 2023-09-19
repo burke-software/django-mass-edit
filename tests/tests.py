@@ -2,6 +2,7 @@ from six.moves.urllib import parse
 from django.contrib.auth.models import User
 from django.contrib import admin
 from django.test import TestCase, override_settings, RequestFactory
+
 try:
     from django.urls import reverse
 except ImportError:  # Django<2.0
@@ -14,6 +15,7 @@ from .models import (
     CustomAdminModel2,
     InheritedAdminModel,
     FieldsetsAdminModel,
+    StringAdminModel,
 )
 from .site import CustomAdminSite
 from .mocks import MockRenderMassAdmin
@@ -73,6 +75,20 @@ class AdminViewTest(TestCase):
                                      "name": "new name"})
         self.assertRedirects(response, get_changelist_url(CustomAdminModel, admin_name))
         new_names = CustomAdminModel.objects.order_by("pk").values_list("name", flat=True)
+        # all models have changed
+        self.assertEqual(list(new_names), ["new name"] * 3)
+
+    def test_update_with_string_primary_key_and_special_chars(self, admin_name='admin'):
+        models = [StringAdminModel.objects.create(
+            primary="{}/3".format(1 + i),
+            name="model {}".format(i),
+        ) for i in range(0, 3)]
+
+        response = self.client.post(get_massadmin_url(models, self.client.session),
+                                    {"_mass_change": "name",
+                                     "name": "new name"})
+        self.assertRedirects(response, get_changelist_url(StringAdminModel, admin_name))
+        new_names = StringAdminModel.objects.order_by("pk").values_list("name", flat=True)
         # all models have changed
         self.assertEqual(list(new_names), ["new name"] * 3)
 
@@ -164,6 +180,7 @@ class AdminViewTest(TestCase):
 class CustomizationTestCase(TestCase):
     """ MassAdmin has all customized options from related ModelAdmin
     """
+
     def setUp(self):
         self.user = User.objects.create_superuser(
             'temporary', 'temporary@gmail.com', 'temporary')

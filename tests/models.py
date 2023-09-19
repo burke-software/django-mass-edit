@@ -9,6 +9,16 @@ class CustomAdminModel(models.Model):
         app_label = "tests"
 
 
+class StringAdminModel(models.Model):
+    """Special model for testing string primary keys."""
+
+    primary = models.CharField(max_length=32, primary_key=True)
+    name = models.CharField(max_length=32)
+
+    class Meta:
+        app_label = "tests"
+
+
 class CustomAdminModel2(models.Model):
     name = models.CharField(max_length=32)
 

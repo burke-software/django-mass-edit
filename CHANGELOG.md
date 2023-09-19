@@ -1,5 +1,10 @@
 # Changelog
 
+3.5.1 (unreleased)
+------------------
+
+* Fixed work with string primary keys that have special characters
+
 3.5.0 (22-08-2023)
 ------------------
 

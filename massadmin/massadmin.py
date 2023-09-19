@@ -33,6 +33,7 @@ import sys
 
 from django.contrib import admin
 from django.core.exceptions import PermissionDenied, ValidationError
+
 try:
     from django.urls import reverse
 except ImportError:  # Django<2.0
@@ -44,9 +45,9 @@ try:  # Django>=1.9
 except ImportError:
     from django.db.models import get_model
 try:
-    from django.contrib.admin.utils import unquote
+    from django.contrib.admin.utils import quote, unquote
 except ImportError:
-    from django.contrib.admin.util import unquote
+    from django.contrib.admin.util import quote, unquote
 from django.contrib.admin import helpers
 from django.utils.translation import gettext_lazy as _
 try:
@@ -77,7 +78,7 @@ def mass_change_selected(modeladmin, request, queryset):
 
 
 def get_mass_change_redirect_url(model_meta, pk_list, session):
-    object_ids = ",".join(str(s) for s in pk_list)
+    object_ids = ",".join(quote(str(s)) for s in pk_list)
     if len(object_ids) > settings.SESSION_BASED_URL_THRESHOLD:
         hash_id = "session-%s" % hashlib.md5(object_ids.encode('utf-8')).hexdigest()
         session[hash_id] = object_ids
@@ -219,11 +220,11 @@ class MassAdmin(admin.ModelAdmin):
             "massadmin_queryset",
             self.admin_obj.get_queryset)(request)
 
-        object_ids = comma_separated_object_ids.split(',')
+        object_ids = [unquote(_id) for _id in comma_separated_object_ids.split(',')]
         object_id = object_ids[0]
 
         try:
-            obj = queryset.get(pk=unquote(object_id))
+            obj = queryset.get(pk=object_id)
         except model.DoesNotExist:
             obj = None
 
