@@ -33,6 +33,7 @@ import sys
 
 from django.contrib import admin
 from django.core.exceptions import PermissionDenied, ValidationError
+
 try:
     from django.urls import reverse
 except ImportError:  # Django<2.0
@@ -44,9 +45,9 @@ try:  # Django>=1.9
 except ImportError:
     from django.db.models import get_model
 try:
-    from django.contrib.admin.utils import unquote
+    from django.contrib.admin.utils import quote, unquote
 except ImportError:
-    from django.contrib.admin.util import unquote
+    from django.contrib.admin.util import quote, unquote
 from django.contrib.admin import helpers
 from django.utils.translation import gettext_lazy as _
 try:
@@ -60,7 +61,7 @@ from django.utils.html import escape
 from django.shortcuts import render
 from django.forms.formsets import all_valid
 from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
-from django.contrib.admin.utils import quote
+
 from . import settings
 
 
