@@ -60,7 +60,7 @@ from django.utils.html import escape
 from django.shortcuts import render
 from django.forms.formsets import all_valid
 from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
-
+from django.contrib.admin.utils import quote
 from . import settings
 
 
@@ -77,7 +77,7 @@ def mass_change_selected(modeladmin, request, queryset):
 
 
 def get_mass_change_redirect_url(model_meta, pk_list, session):
-    object_ids = ",".join(str(s) for s in pk_list)
+    object_ids = ",".join(quote(str(s)) for s in pk_list)
     if len(object_ids) > settings.SESSION_BASED_URL_THRESHOLD:
         hash_id = "session-%s" % hashlib.md5(object_ids.encode('utf-8')).hexdigest()
         session[hash_id] = object_ids
