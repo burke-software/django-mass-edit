@@ -4,3 +4,4 @@ django_mass_edit.egg-info
 .idea
 .coverage
 .tox
+db.sqlite3
