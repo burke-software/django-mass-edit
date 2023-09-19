@@ -7,22 +7,20 @@ from .models import (
     CustomAdminModel2,
     InheritedAdminModel,
     FieldsetsAdminModel,
+    StringAdminModel,
 )
 
 
 class CustomAdminForm(forms.ModelForm):
-
     def clean_name(self):
-        """ Fake cleaning for tests
-        """
+        """Fake cleaning for tests"""
         name = self.cleaned_data.get("name")
-        if (self.instance.pk
-                and name == "invalid {}".format(self.instance.pk)):
+        if self.instance.pk and name == "invalid {}".format(self.instance.pk):
             raise forms.ValidationError("Invalid model name")
         return name
 
     class Meta:
-        fields = ("name", )
+        fields = ("name",)
         model = CustomAdminModel
 
 
@@ -31,7 +29,9 @@ class InheritedAdminInline(admin.TabularInline):
 
 
 class CustomAdmin(admin.ModelAdmin):
-    inlines = [InheritedAdminInline, ]
+    inlines = [
+        InheritedAdminInline,
+    ]
     model = CustomAdminModel
     form = CustomAdminForm
 
@@ -45,17 +45,21 @@ class CustomAdminWithCustomTemplate(admin.ModelAdmin):
     change_form_template = "admin/change_form_template.html"
 
 
+class CustomAdminWithStringPK(admin.ModelAdmin):
+    model = StringAdminModel
+
+
 class CustomAdminWithGetFieldsetsAncestor(admin.ModelAdmin):
     """
     Ancestor that defines fieldsets
     which should not be used by the mass_change_view()
     """
+
     model = FieldsetsAdminModel
     fieldsets = ()
 
 
 class CustomAdminWithGetFieldsets(CustomAdminWithGetFieldsetsAncestor):
-
     def get_fieldsets(self, request, obj=None):
         return (
             ("First part of name", {"fields": ("first_name",)}),
@@ -66,18 +70,19 @@ class CustomAdminWithGetFieldsets(CustomAdminWithGetFieldsetsAncestor):
 admin.site.register(CustomAdminModel, CustomAdmin)
 admin.site.register(CustomAdminModel2, CustomAdminWithCustomTemplate)
 admin.site.register(FieldsetsAdminModel, CustomAdminWithGetFieldsets)
+admin.site.register(StringAdminModel, CustomAdminWithStringPK)
 
 
 class BaseAdmin(admin.ModelAdmin):
-    readonly_fields = ("name", )
+    readonly_fields = ("name",)
 
 
 class InheritedAdmin(BaseAdmin):
     model = InheritedAdminModel
-    raw_id_fields = ("fk_field", )
+    raw_id_fields = ("fk_field",)
 
 
 admin.site.register(InheritedAdminModel, InheritedAdmin)
 
-custom_admin_site = admin.AdminSite(name='myadmin')
+custom_admin_site = admin.AdminSite(name="myadmin")
 custom_admin_site.register(CustomAdminModel, CustomAdmin)
