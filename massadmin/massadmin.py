@@ -220,11 +220,11 @@ class MassAdmin(admin.ModelAdmin):
             "massadmin_queryset",
             self.admin_obj.get_queryset)(request)
 
-        object_ids = comma_separated_object_ids.split(',')
+        object_ids = [unquote(_id) for _id in comma_separated_object_ids.split(',')]
         object_id = object_ids[0]
 
         try:
-            obj = queryset.get(pk=unquote(object_id))
+            obj = queryset.get(pk=object_id)
         except model.DoesNotExist:
             obj = None
 
