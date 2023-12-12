@@ -248,6 +248,7 @@ class MassAdmin(admin.ModelAdmin):
                 with transaction.atomic():
                     objects_count = 0
                     changed_count = 0
+                    forms_errors = []  # accumulate across all forms
                     objects = queryset.filter(pk__in=object_ids)
                     for obj in objects:
                         objects_count += 1
@@ -271,6 +272,7 @@ class MassAdmin(admin.ModelAdmin):
                                 form,
                                 change=True)
                         else:
+                            forms_errors.append({obj: form.errors})
                             form_validated = False
                             new_object = obj
                         prefixes = {}
@@ -317,8 +319,16 @@ class MassAdmin(admin.ModelAdmin):
                     else:
                         errors = form.errors
                         errors_list = helpers.AdminErrorList(form, formsets)
+                        # Create consolidated feedback on errors
+                        msg = _('%s out of %s edits have errors!' %
+                            (objects_count - changed_count, objects_count))
+                        messages.add_message(request, messages.ERROR, msg)
+                        for err in forms_errors:
+                            msg = f'<p>{list(err.keys())[0]}:<br/>' \
+                                f'{list(err.values())[0]}</p>'.replace('__all__', 'General')
+                            messages.add_message(request, messages.ERROR, mark_safe(msg))
                         # Raise error for rollback transaction in atomic block
-                        raise ValidationError("Not all forms is correct")
+                        raise ValidationError("Not all forms' data are correct")
 
             except Exception:
                 general_error = sys.exc_info()[1]
