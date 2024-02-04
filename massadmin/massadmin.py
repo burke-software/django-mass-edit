@@ -123,7 +123,7 @@ class MassAdmin(admin.ModelAdmin):
             raise Exception('Model not registered with the admin site.')
 
         for (varname, var) in self.get_overrided_properties().items():
-            if not varname.startswith('_') and not isinstance(var, types.FunctionType):
+            if not varname.startswith('_') and not callable(var):
                 self.__dict__[varname] = var
 
         super(MassAdmin, self).__init__(model, admin_site)
